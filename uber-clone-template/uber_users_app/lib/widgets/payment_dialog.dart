@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
+import 'package:uber_users_app/api/api_client.dart';
+import 'package:uber_users_app/l10n/l10n_ext.dart';
 
 class PaymentDialog extends StatefulWidget {
   final String fareAmount;
@@ -10,7 +12,7 @@ class PaymentDialog extends StatefulWidget {
   final String preferredPaymentMethod;
   final String promoCode;
 
-  PaymentDialog({
+  const PaymentDialog({
     super.key,
     required this.fareAmount,
     required this.tripId,
@@ -24,8 +26,6 @@ class PaymentDialog extends StatefulWidget {
 }
 
 class _PaymentDialogState extends State<PaymentDialog> {
-  static const String _awsApiBaseUrl =
-      "https://xhmks5miz3rrn35sxdboeddoqa0jcajs.lambda-url.us-east-1.on.aws";
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +44,9 @@ class _PaymentDialogState extends State<PaymentDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 21),
-            const Text(
-              "Trip Payment",
-              style: TextStyle(
+            Text(
+              context.l10n.tripPayment,
+              style: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w700,
                 fontSize: 18,
@@ -66,18 +66,18 @@ class _PaymentDialogState extends State<PaymentDialog> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                "This is fare amount ( JOD ${widget.fareAmount} ) you have to pay to the driver.",
+                context.l10n.paymentYouPayDriver(widget.fareAmount),
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.black),
               ),
             ),
             const SizedBox(height: 10),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                "Velo applies a built-in 5% rider discount versus comparable market fares.",
+                context.l10n.paymentBuiltInDiscount,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Color(0xFF475569),
                   fontSize: 12,
                 ),
@@ -85,30 +85,43 @@ class _PaymentDialogState extends State<PaymentDialog> {
             ),
             const SizedBox(height: 31),
             if (widget.preferredPaymentMethod == "Cash") ...[
-              ElevatedButton(
-                onPressed: () async {
-                  await _markTripPayment("Cash");
-                  await _consumePromoIfAny();
-                  if (mounted) Navigator.pop(context, "paid");
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                child: const Text("PAY WITH CASH",
-                    style: TextStyle(color: Colors.white)),
+              Semantics(
+                button: true,
+                label: context.l10n.payWithCash,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    HapticFeedback.mediumImpact();
+                    await _markTripPayment("Cash");
+                    await _consumePromoIfAny();
+                    if (!context.mounted) return;
+                    Navigator.pop(context, "paid");
+                  },
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                  child: Text(context.l10n.payWithCash,
+                      style: const TextStyle(color: Colors.white)),
+                ),
               ),
             ] else if (widget.preferredPaymentMethod == "Wallet") ...[
-              ElevatedButton(
-                onPressed: () async {
-                  await payWithWallet();
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                child: const Text("PAY WITH WALLET",
-                    style: TextStyle(color: Colors.white)),
+              Semantics(
+                button: true,
+                label: context.l10n.payWithWallet,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    HapticFeedback.mediumImpact();
+                    await payWithWallet();
+                  },
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                  child: Text(context.l10n.payWithWallet,
+                      style: const TextStyle(color: Colors.white)),
+                ),
               ),
             ] else ...[
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
-                  "Only Cash and Wallet are currently supported.",
+                  context.l10n.onlyCashWalletSupported,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -119,7 +132,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
                 Navigator.pop(context, "paid");
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-              child: const Text("OK", style: TextStyle(color: Colors.white)),
+              child: Text(context.l10n.ok, style: const TextStyle(color: Colors.white)),
             ),
             const SizedBox(height: 31),
           ],
@@ -129,24 +142,22 @@ class _PaymentDialogState extends State<PaymentDialog> {
   }
 
   Future<void> payWithWallet() async {
+    final l10n = context.l10n;
     try {
       final amount = double.tryParse(widget.fareAmount) ?? 0.0;
-      final userRes = await http.get(
-        Uri.parse("$_awsApiBaseUrl/users/${widget.userId}"),
-        headers: {"Authorization": "Bearer public-migration-token"},
-      );
+      final userRes = await ApiClient.get("/users/${widget.userId}");
       if (userRes.statusCode != 200) {
-        throw Exception("Failed to load wallet.");
+        throw Exception(l10n.failedToLoadWallet);
       }
       final payload = jsonDecode(userRes.body) as Map<String, dynamic>;
       if ((payload["exists"] ?? false) != true || payload["item"] == null) {
-        throw Exception("User not found.");
+        throw Exception(l10n.userNotFound);
       }
       final user = Map<String, dynamic>.from(payload["item"] as Map);
       final currentBalance =
           double.tryParse(user["walletBalance"]?.toString() ?? "0") ?? 0.0;
       if (currentBalance < amount) {
-        throw Exception("Insufficient wallet balance.");
+        throw Exception(l10n.insufficientWalletBalance);
       }
       final nextBalance = currentBalance - amount;
       final txs = List<Map<String, dynamic>>.from(
@@ -156,21 +167,14 @@ class _PaymentDialogState extends State<PaymentDialog> {
       txs.insert(0, {
         "type": "debit",
         "amount": amount.toStringAsFixed(2),
-        "reason": "Trip payment ${widget.tripId}",
+        "reason": l10n.walletTripPayment(widget.tripId),
         "issuedBy": "system",
         "createdAt": DateTime.now().toIso8601String(),
       });
-      await http.put(
-        Uri.parse("$_awsApiBaseUrl/users/${widget.userId}"),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer public-migration-token",
-        },
-        body: jsonEncode({
-          "walletBalance": nextBalance.toStringAsFixed(2),
-          "walletTransactions": txs,
-        }),
-      );
+      await ApiClient.put("/users/${widget.userId}", body: {
+        "walletBalance": nextBalance.toStringAsFixed(2),
+        "walletTransactions": txs,
+      });
       await _markTripPayment("Wallet");
       await _consumePromoIfAny();
       if (mounted) {
@@ -186,33 +190,19 @@ class _PaymentDialogState extends State<PaymentDialog> {
 
   Future<void> _markTripPayment(String method) async {
     if (widget.tripId.isEmpty) return;
-    await http.put(
-      Uri.parse("$_awsApiBaseUrl/trips/${widget.tripId}"),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer public-migration-token",
-      },
-      body: jsonEncode({
-        "paymentMethod": method,
-        "paymentStatus": "paid",
-        "paidAt": DateTime.now().toIso8601String(),
-      }),
-    );
+    await ApiClient.put("/trips/${widget.tripId}", body: {
+      "paymentMethod": method,
+      "paymentStatus": "paid",
+      "paidAt": DateTime.now().toIso8601String(),
+    });
   }
 
   Future<void> _consumePromoIfAny() async {
     final code = widget.promoCode.trim();
     if (code.isEmpty) return;
-    await http.post(
-      Uri.parse("$_awsApiBaseUrl/promos/consume"),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer public-migration-token",
-      },
-      body: jsonEncode({
-        "code": code,
-        "userId": widget.userId,
-      }),
-    );
+    await ApiClient.post("/promos/consume", body: {
+      "code": code,
+      "userId": widget.userId,
+    });
   }
 }

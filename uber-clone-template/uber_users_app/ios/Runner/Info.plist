@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>NSLocationAlwaysAndWhenInUsageDescription</key>
-	<string>App app want's to access your location to get address</string>
+	<string>Velo uses your location to find nearby drivers and show your position on the map.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>App app want's to access your location to get address.</string>
+	<string>Velo uses your location to find nearby drivers and show your position on the map.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>App app want's to access your location to get address.</string>
+	<string>Velo uses your location in the background to track your active trip and share your ride status.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string> App want's to access your location to get address.</string>
+	<string>Velo uses your location to find nearby drivers and show your position on the map.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Velo Users App</string>
+	<string>Velo</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -21,7 +21,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>uber_users_app</string>
+	<string>Velo</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -49,6 +49,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>MAPS_API_KEY</key>
+	<string>$(MAPS_API_KEY)</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

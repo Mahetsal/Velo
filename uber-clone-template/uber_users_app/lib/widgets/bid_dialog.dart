@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uber_users_app/l10n/l10n_ext.dart';
 
 class BidDialogWidget extends StatefulWidget {
   final double? initialFareAmount;
@@ -11,7 +12,7 @@ class BidDialogWidget extends StatefulWidget {
   });
 
   @override
-  _BidDialogWidgetState createState() => _BidDialogWidgetState();
+  State<BidDialogWidget> createState() => _BidDialogWidgetState();
 }
 
 class _BidDialogWidgetState extends State<BidDialogWidget> {
@@ -30,7 +31,7 @@ class _BidDialogWidgetState extends State<BidDialogWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Set Bid Amount'),
+          title: Text(context.l10n.setBidAmount),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -46,7 +47,10 @@ class _BidDialogWidgetState extends State<BidDialogWidget> {
                   ),
                   errorText: _validateBidAmount(),
                   helperText:
-                      'Bid must be between Rs. ${_calculateLowerLimit().toStringAsFixed(2)}\nand Rs. ${_calculateUpperLimit().toStringAsFixed(2)}',
+                      context.l10n.bidRange(
+                        _calculateLowerLimit().toStringAsFixed(2),
+                        _calculateUpperLimit().toStringAsFixed(2),
+                      ),
                   helperStyle: const TextStyle(color: Colors.black),
                 ),
                 style: const TextStyle(color: Colors.white),
@@ -63,9 +67,9 @@ class _BidDialogWidgetState extends State<BidDialogWidget> {
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: const Text(
-                'Cancel',
-                style: TextStyle(color: Colors.black),
+              child: Text(
+                context.l10n.cancel,
+                style: const TextStyle(color: Colors.black),
               ),
             ),
             TextButton(
@@ -76,9 +80,9 @@ class _BidDialogWidgetState extends State<BidDialogWidget> {
                   Navigator.of(context).pop(); // Close the dialog
                 }
               },
-              child: const Text(
-                "OK",
-                style: TextStyle(color: Colors.black),
+              child: Text(
+                context.l10n.ok,
+                style: const TextStyle(color: Colors.black),
               ),
             ),
           ],
@@ -88,14 +92,16 @@ class _BidDialogWidgetState extends State<BidDialogWidget> {
   }
 
   String? _validateBidAmount() {
-    double fare = widget.initialFareAmount!;
     double bid = double.tryParse(bidController.text) ?? 0.0;
 
     double lowerLimit = _calculateLowerLimit();
     double upperLimit = _calculateUpperLimit();
 
     if (bid < lowerLimit || bid > upperLimit) {
-      return 'Bid must be between Rs. ${lowerLimit.toStringAsFixed(2)}\nand Rs. ${upperLimit.toStringAsFixed(2)}';
+      return context.l10n.bidRange(
+        lowerLimit.toStringAsFixed(2),
+        upperLimit.toStringAsFixed(2),
+      );
     }
     return null;
   }
@@ -120,8 +126,8 @@ class _BidDialogWidgetState extends State<BidDialogWidget> {
       onPressed: () => _showBidDialog(context),
       child: Text(
         _enteredBidAmount == null || _validateBidAmount() != null
-            ? "Set Bid"
-            : 'Bid: Rs. ${_enteredBidAmount}',
+            ? context.l10n.setBid
+            : context.l10n.bidAmount(_enteredBidAmount ?? ""),
         style: const TextStyle(color: Colors.white),
       ),
     );

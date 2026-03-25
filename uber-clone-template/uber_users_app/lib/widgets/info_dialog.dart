@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
 class InfoDialog extends StatelessWidget {
-  String? title, description;
-  InfoDialog({super.key, this.title, this.description});
+  final String title;
+  final String description;
+
+  const InfoDialog({
+    super.key,
+    required this.title,
+    required this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +32,7 @@ class InfoDialog extends StatelessWidget {
                   height: 12,
                 ),
                 Text(
-                  title!,
+                  title,
                   style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -36,7 +42,7 @@ class InfoDialog extends StatelessWidget {
                   height: 27,
                 ),
                 Text(
-                  description!,
+                  description,
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.black),
                 ),

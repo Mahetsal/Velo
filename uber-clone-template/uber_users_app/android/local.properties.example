@@ -1,0 +1,5 @@
+# Copy this file to local.properties (which is git-ignored).
+# Flutter and Android Studio will also add sdk.dir / flutter.sdk automatically.
+
+# Google Maps Platform key — restrict by package + SHA-1 in Cloud Console.
+MAPS_API_KEY=YOUR_MAPS_API_KEY_HERE

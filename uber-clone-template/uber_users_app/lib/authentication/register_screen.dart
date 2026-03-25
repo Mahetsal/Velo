@@ -6,7 +6,10 @@ import 'package:uber_users_app/authentication/user_information_screen.dart';
 import 'package:uber_users_app/methods/common_methods.dart';
 import 'package:uber_users_app/pages/blocked_screen.dart';
 import 'package:uber_users_app/pages/home_page.dart';
+import 'package:uber_users_app/pages/privacy_policy_page.dart';
 import 'package:uber_users_app/pages/terms_page.dart';
+import 'package:uber_users_app/theme/app_theme.dart';
+import 'package:uber_users_app/l10n/l10n_ext.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -49,323 +52,426 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final authProvider = Provider.of<AuthenticationProvider>(context);
     return SafeArea(
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: AppTheme.surface,
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
             child: Form(
               key: _formKey,
               child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8),
-                Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(18),
-                    child: Image.asset(
-                      "assets/images/velo_logo.png",
-                      width: 86,
-                      height: 86,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                const Text(
-                  "Welcome to Velo",
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF101828),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  "Choose login for existing account or sign up for new",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF667085),
-                  ),
-                ),
-                const SizedBox(
-                  height: 18,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => setState(() => isLoginMode = true),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: isLoginMode
-                                  ? const Color(0xFFE11D48)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              "Login",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: isLoginMode ? Colors.white : const Color(0xFF334155),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 12),
+                  Center(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: const BoxDecoration(
+                            color: AppTheme.accent,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(0x220F172A),
+                                blurRadius: 24,
+                                offset: Offset(0, 12),
+                              )
+                            ],
                           ),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => setState(() => isLoginMode = false),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: !isLoginMode
-                                  ? const Color(0xFFE11D48)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              "Sign up",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: !isLoginMode ? Colors.white : const Color(0xFF334155),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 14),
-                TextFormField(
-                  controller: phoneController,
-                  maxLength: 15,
-                  textInputAction: TextInputAction.done,
-                  keyboardType: TextInputType.phone,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      // Just trigger rebuild for suffix icon; controller updates automatically
-                    });
-                  },
-                  validator: (value) {
-                    final cleaned = _normalizePhone(value ?? "");
-                    if (cleaned.length < 7 || cleaned.length > 15) {
-                      return "Enter a valid mobile number";
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    counterText: '',
-                    hintText: '313 7426256',
-                    hintStyle: const TextStyle(
-                      color: Color(0xFF98A2B3),
-                      fontSize: 16,
-                    ),
-                    prefixIconConstraints:
-                        const BoxConstraints(minWidth: 120, minHeight: 48),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFD0D5DD)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFF1570EF)),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.redAccent),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.redAccent),
-                    ),
-                    prefixIcon: Container(
-                      padding: const EdgeInsets.fromLTRB(12.0, 12.0, 4.0, 12.0),
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          showCountryPicker(
-                            context: context,
-                            countryListTheme: const CountryListThemeData(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                                bottomSheetHeight: 400),
-                            onSelect: (value) {
-                              setState(() {
-                                selectedCountry = value;
-                              });
-                            },
-                          );
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              ' +${selectedCountry.phoneCode}',
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            const Icon(Icons.arrow_drop_down, size: 24),
-                          ],
-                        ),
-                      ),
-                    ),
-                    suffixIcon: phoneController.text.length >= 7
-                        ? Container(
-                            height: 20,
-                            width: 20,
-                            margin: const EdgeInsets.all(10.0),
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.circle, color: Colors.black),
-                            child: const Icon(
-                              Icons.done,
-                              size: 20,
+                          alignment: Alignment.center,
+                          child: Text(
+                            context.l10n.brandInitial,
+                            style: const TextStyle(
                               color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 22,
                             ),
-                          )
-                        : null,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          context.l10n.appName,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.8,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          context.l10n.registerTagline,
+                          style: const TextStyle(
+                            color: AppTheme.onSurfaceMuted,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: passwordController,
-                  obscureText: true,
-                  validator: (value) {
-                    if ((value ?? "").trim().length < 6) {
-                      return "Password must be at least 6 characters";
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: 'Enter password',
-                    hintStyle: const TextStyle(
-                      color: Color(0xFF98A2B3),
-                      fontSize: 15,
+                  const SizedBox(height: 18),
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceLowest,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x140F172A),
+                          blurRadius: 30,
+                          offset: Offset(0, 18),
+                        ),
+                      ],
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFD0D5DD)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFF1570EF)),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.redAccent),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.redAccent),
-                    ),
-                    prefixIcon: const Icon(Icons.lock_outline),
-                  ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                if (!isLoginMode)
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: acceptedTerms,
-                        onChanged: (v) {
-                          setState(() {
-                            acceptedTerms = v ?? false;
-                          });
-                        },
-                      ),
-                      Expanded(
-                        child: Wrap(
-                          children: [
-                            const Text("I agree to the "),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const TermsPage(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF3F4F6),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          padding: const EdgeInsets.all(4),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => setState(() => isLoginMode = true),
+                                  child: AnimatedContainer(
+                                    duration:
+                                        const Duration(milliseconds: 180),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: isLoginMode
+                                          ? Colors.white
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: Text(
+                                      context.l10n.login,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: isLoginMode
+                                            ? AppTheme.onSurface
+                                            : AppTheme.onSurfaceMuted,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
                                   ),
-                                );
-                              },
-                              child: const Text(
-                                "Terms & Conditions",
-                                style: TextStyle(
-                                  color: Color(0xFF2563EB),
-                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      setState(() => isLoginMode = false),
+                                  child: AnimatedContainer(
+                                    duration:
+                                        const Duration(milliseconds: 180),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: !isLoginMode
+                                          ? Colors.white
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: Text(
+                                      context.l10n.signUp,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: !isLoginMode
+                                            ? AppTheme.accent
+                                            : AppTheme.onSurfaceMuted,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          isLoginMode
+                              ? context.l10n.welcomeBack
+                              : context.l10n.welcomeSignUpTitle,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.6,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          isLoginMode
+                              ? context.l10n.loginSubtitle
+                              : context.l10n.signUpSubtitle,
+                          style: const TextStyle(color: AppTheme.onSurfaceMuted),
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          context.l10n.phoneNumberLabelUpper,
+                          style: TextStyle(
+                            color: AppTheme.onSurfaceMuted.withOpacity(0.9),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 11,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: phoneController,
+                          maxLength: 15,
+                          textInputAction: TextInputAction.done,
+                          keyboardType: TextInputType.phone,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          onChanged: (_) => setState(() {}),
+                          validator: (value) {
+                            final cleaned = _normalizePhone(value ?? "");
+                            if (cleaned.length < 7 || cleaned.length > 15) {
+                              return context.l10n.enterValidMobileNumber;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: const Color(0xFFF3F4F6),
+                            counterText: '',
+                            hintText: context.l10n.phoneHint,
+                            hintStyle: const TextStyle(
+                              color: Color(0xFF98A2B3),
+                              fontSize: 16,
+                            ),
+                            prefixIconConstraints: const BoxConstraints(
+                                minWidth: 120, minHeight: 48),
+                            prefixIcon: Container(
+                              padding: const EdgeInsets.fromLTRB(
+                                  12.0, 12.0, 4.0, 12.0),
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  showCountryPicker(
+                                    context: context,
+                                    countryListTheme:
+                                        const CountryListThemeData(
+                                            borderRadius:
+                                                BorderRadius.vertical(
+                                                    top: Radius.circular(16)),
+                                            bottomSheetHeight: 400),
+                                    onSelect: (value) {
+                                      setState(() {
+                                        selectedCountry = value;
+                                      });
+                                    },
+                                  );
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      ' +${selectedCountry.phoneCode}',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const Icon(Icons.arrow_drop_down, size: 24),
+                                  ],
                                 ),
                               ),
                             ),
-                          ],
+                            suffixIcon: phoneController.text.length >= 7
+                                ? Container(
+                                    height: 20,
+                                    width: 20,
+                                    margin: const EdgeInsets.all(10.0),
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: AppTheme.onSurface),
+                                    child: const Icon(
+                                      Icons.done,
+                                      size: 20,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : null,
+                          ),
                         ),
-                      )
-                    ],
-                  ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  height: MediaQuery.of(context).size.height * 0.07,
-                  child: ElevatedButton(
-                    onPressed: isLoginMode ? loginWithPhone : signUpWithPhone,
-
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      backgroundColor: const Color(0xFFD90429),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: authProvider.isLoading
-                        ? const CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          )
-                        : Text(
-                            isLoginMode ? "Login with Phone" : "Create Account",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
+                        const SizedBox(height: 14),
+                        Text(
+                          context.l10n.passwordLabelUpper,
+                          style: TextStyle(
+                            color: AppTheme.onSurfaceMuted.withOpacity(0.9),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 11,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: passwordController,
+                          obscureText: true,
+                          validator: (value) {
+                            if ((value ?? "").trim().length < 6) {
+                              return context.l10n.passwordMinChars;
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            filled: true,
+                            fillColor: Color(0xFFF3F4F6),
+                            hintText: '••••••••',
+                            hintStyle: TextStyle(
+                              color: Color(0xFF98A2B3),
+                              fontSize: 15,
+                            ),
+                            suffixIcon: Icon(Icons.remove_red_eye_outlined),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        if (!isLoginMode)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Checkbox(
+                                value: acceptedTerms,
+                                onChanged: (v) => setState(
+                                    () => acceptedTerms = v ?? false),
+                              ),
+                              Expanded(
+                                child: Wrap(
+                                  children: [
+                                    Text(context.l10n.iAcceptThe),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => const TermsPage(),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        context.l10n.termsOfServiceText,
+                                        style: const TextStyle(
+                                          color: AppTheme.accent,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(context.l10n.andAcknowledgeThe),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const PrivacyPolicyPage(),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        context.l10n.privacyPolicyText,
+                                        style: const TextStyle(
+                                          color: AppTheme.accent,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(context.l10n.dot),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed:
+                                isLoginMode ? loginWithPhone : signUpWithPhone,
+                            child: authProvider.isLoading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        isLoginMode
+                                            ? context.l10n.login
+                                            : context.l10n.createAccount,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Icon(Directionality.of(context) == TextDirection.rtl
+                                          ? Icons.arrow_back_rounded
+                                          : Icons.arrow_forward_rounded),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                        if (isLoginMode) ...[
+                          const SizedBox(height: 10),
+                          Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: TextButton(
+                              onPressed: _showResetPasswordSheet,
+                              child: Text(context.l10n.forgotPassword),
                             ),
                           ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                if (isLoginMode)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: _showResetPasswordSheet,
-                      child: const Text("Forgot password?"),
+                        ],
+                      ],
                     ),
                   ),
-                const SizedBox(height: 18),
-                const Text(
-                  "Login uses phone + password, and account data is stored in the backend database.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey,
+                  const SizedBox(height: 22),
+                  Text(
+                    context.l10n.registerFooterUpper,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppTheme.onSurfaceMuted.withOpacity(0.8),
+                      fontWeight: FontWeight.w800,
+                      fontSize: 11,
+                      letterSpacing: 2.0,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Container(
+                      width: 64,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: AppTheme.accent.withOpacity(0.25),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          width: 28,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: AppTheme.accent,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -385,7 +491,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (phoneNumber.isEmpty || phoneNumber.length < 7 || phoneNumber.length > 15) {
       // Show error if the phone number is invalid
       commonMethods.displaySnackBar(
-        "Please enter a valid mobile number.",
+        context.l10n.pleaseEnterValidMobileNumber,
         context,
       );
       return;
@@ -415,7 +521,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       navigate(isSingedIn: true);
     } else {
       commonMethods.displaySnackBar(
-        "Account exists but profile is incomplete. Please complete sign up.",
+        context.l10n.profileIncompletePleaseCompleteSignup,
         context,
       );
       navigate(isSingedIn: false);
@@ -430,23 +536,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
     if (!acceptedTerms) {
       commonMethods.displaySnackBar(
-          "Please accept Terms & Conditions to continue.", context);
+          context.l10n.pleaseAcceptTermsToContinue, context);
       return;
     }
     final String phoneNumber = _normalizePhone(phoneController.text);
     if (phoneNumber.isEmpty || phoneNumber.length < 7 || phoneNumber.length > 15) {
       commonMethods.displaySnackBar(
-        "Please enter a valid mobile number.",
+        context.l10n.pleaseEnterValidMobileNumber,
         context,
       );
       return;
     }
     final String fullPhoneNumber = '+${selectedCountry.phoneCode}$phoneNumber';
     final exists = await authRepo.checkUserExistByPhone(fullPhoneNumber);
+    if (!mounted) return;
     if (exists) {
       if (!mounted) return;
       commonMethods.displaySnackBar(
-        "An account already exists with this phone. Please login.",
+        context.l10n.accountExistsPleaseLogin,
         context,
       );
       return;
@@ -454,7 +561,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final String password = passwordController.text.trim();
     if (password.length < 6) {
       commonMethods.displaySnackBar(
-        "Password must be at least 6 characters.",
+        context.l10n.passwordMinChars,
         context,
       );
       return;
@@ -512,22 +619,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  "Reset Password",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                Text(
+                  context.l10n.resetPasswordTitle,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: phoneResetController,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: "Phone number",
-                    hintText: "79xxxxxxx",
+                  decoration: InputDecoration(
+                    labelText: context.l10n.phoneNumber,
+                    hintText: context.l10n.resetPhoneHint,
                   ),
                   validator: (value) {
                     final cleaned = _normalizePhone(value ?? "");
                     if (cleaned.length < 7 || cleaned.length > 15) {
-                      return "Enter a valid phone number";
+                      return context.l10n.enterValidPhoneNumber;
                     }
                     return null;
                   },
@@ -536,10 +643,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: newPasswordController,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: "New password"),
+                  decoration: InputDecoration(labelText: context.l10n.newPassword),
                   validator: (value) {
                     if ((value ?? "").trim().length < 6) {
-                      return "Password must be at least 6 characters";
+                      return context.l10n.passwordMinChars;
                     }
                     return null;
                   },
@@ -548,10 +655,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: confirmPasswordController,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: "Confirm password"),
+                  decoration: InputDecoration(labelText: context.l10n.confirmPassword),
                   validator: (value) {
                     if ((value ?? "").trim() != newPasswordController.text.trim()) {
-                      return "Passwords do not match";
+                      return context.l10n.passwordsDoNotMatch;
                     }
                     return null;
                   },
@@ -575,11 +682,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         phoneNumber: fullPhone,
                         newPassword: newPasswordController.text.trim(),
                       );
-                      if (ok && mounted) {
+                      if (ok && context.mounted) {
                         Navigator.pop(context);
                       }
                     },
-                    child: const Text("Reset password"),
+                    child: Text(context.l10n.resetPassword),
                   ),
                 ),
               ],

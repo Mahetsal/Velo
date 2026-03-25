@@ -10,8 +10,6 @@ class ManageDriversMethods {
     if (index != -1) {
       // Ensure the index is valid
       nearbyOnlineDriversList.removeAt(index);
-    } else {
-      print("Driver with ID $driverId not found in the list.");
     }
   }
 
@@ -26,9 +24,6 @@ class ManageDriversMethods {
           nearbyOnlineDriverInformation.latDriver;
       nearbyOnlineDriversList[index].lngDriver =
           nearbyOnlineDriverInformation.lngDriver;
-    } else {
-      print(
-          "Driver with ID ${nearbyOnlineDriverInformation.uidDriver} not found in the list.");
     }
   }
 }

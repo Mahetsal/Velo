@@ -6,10 +6,11 @@ import 'package:uber_users_app/authentication/user_information_screen.dart';
 import 'package:uber_users_app/methods/common_methods.dart';
 import 'package:uber_users_app/pages/blocked_screen.dart';
 import 'package:uber_users_app/pages/home_page.dart';
+import 'package:uber_users_app/theme/app_theme.dart';
 
 class OTPScreen extends StatefulWidget {
   final String verificationId;
-  const OTPScreen({Key? key, required this.verificationId}) : super(key: key);
+  const OTPScreen({super.key, required this.verificationId});
 
   @override
   State<OTPScreen> createState() => _OTPScreenState();
@@ -24,129 +25,174 @@ class _OTPScreenState extends State<OTPScreen> {
     final authRepo = Provider.of<AuthenticationProvider>(context, listen: true);
     return SafeArea(
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F7FB),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 25.0, horizontal: 35),
-            child: Column(
+        backgroundColor: AppTheme.surface,
+        body: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+          children: [
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE9EEFF),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Text(
+                  "SECURITY VERIFICATION",
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
+                    color: AppTheme.onSurfaceMuted,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            const Text(
+              "Verify your\nnumber",
+              style: TextStyle(
+                fontSize: 40,
+                height: 0.98,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -1.2,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              "We've sent a 6-digit code to\nyour mobile device.",
+              style: TextStyle(color: AppTheme.onSurfaceMuted, fontSize: 16),
+            ),
+            const SizedBox(height: 22),
+            Center(
+              child: Pinput(
+                length: 6,
+                showCursor: true,
+                defaultPinTheme: PinTheme(
+                  width: 54,
+                  height: 54,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(999),
+                    color: Colors.white,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x140F172A),
+                        blurRadius: 18,
+                        offset: Offset(0, 10),
+                      )
+                    ],
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                onChanged: (v) => setState(() => smsCode = v),
+                onCompleted: (value) {
+                  setState(() => smsCode = value);
+                  verifyOTP(smsCode: value);
+                },
+              ),
+            ),
+            const SizedBox(height: 18),
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Verify your number',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                const Text(
-                  'Enter the 6-digit OTP sent to your phone',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF667085),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-
-                // pinput
-                Pinput(
-                  length: 6,
-                  showCursor: true,
-                  defaultPinTheme: PinTheme(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      color: Colors.white,
-                      border: Border.all(color: const Color(0xFFD0D5DD)),
-                    ),
-                    textStyle: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                  onCompleted: (value) {
-                    setState(() {
-                      smsCode = value;
-                    });
-
-                    // verify OTP
-                    verifyOTP(smsCode: smsCode!);
-                  },
-                ),
-
-                const SizedBox(
-                  height: 25,
-                ),
-
-                authRepo.isLoading
-                    ? const CircularProgressIndicator(
-                        color: Colors.black,
-                      )
-                    : const SizedBox.shrink(),
-
-                authRepo.isSuccessful
-                    ? Container(
-                        height: 40,
-                        width: 40,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.green,
+                Row(
+                  children: [
+                    Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppTheme.accent.withOpacity(0.35),
+                          width: 2,
                         ),
-                        child: const Icon(
-                          Icons.done,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-
-                const SizedBox(
-                  height: 25,
-                ),
-
-                const Text(
-                  'Didn\'t Receive Any Code?',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF667085),
-                  ),
-                ),
-
-                const SizedBox(
-                  height: 16,
-                ),
-
-                SizedBox(
-                  width: MediaQuery.of(context).size.width *
-                      0.3, // Set button width
-                  height: 50, // Fixed button height
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      backgroundColor: Colors.white,
-                      side: const BorderSide(color: Color(0xFFD0D5DD)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(12), // Rounded corners
                       ),
                     ),
-                    onPressed: () {},
-                    child: const Text(
-                      "Resend",
+                    const SizedBox(width: 8),
+                    Text(
+                      authRepo.isLoading ? "VERIFYING" : "VERIFY",
                       style: TextStyle(
-                        fontSize: 16, // Button text size
-                        color: Colors.black, // Button text color
+                        color: AppTheme.accent.withOpacity(0.6),
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.1,
+                        fontSize: 12,
                       ),
                     ),
-                  ),
+                  ],
+                ),
+                const SizedBox(width: 18),
+                Container(width: 1, height: 18, color: Colors.black12),
+                const SizedBox(width: 18),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      size: 18,
+                      color: authRepo.isSuccessful
+                          ? const Color(0xFF047857)
+                          : const Color(0xFF94A3B8),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      authRepo.isSuccessful ? "VALID" : "PENDING",
+                      style: TextStyle(
+                        color: authRepo.isSuccessful
+                            ? const Color(0xFF047857)
+                            : const Color(0xFF94A3B8),
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.1,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 26),
+            SizedBox(
+              height: 58,
+              child: ElevatedButton(
+                onPressed: (smsCode ?? "").length == 6 && !authRepo.isLoading
+                    ? () => verifyOTP(smsCode: smsCode!)
+                    : null,
+                child: const Text(
+                  "Confirm Code",
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            const Center(
+              child: Text(
+                "Didn't receive the code?",
+                style: TextStyle(color: AppTheme.onSurfaceMuted),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Center(
+              child: TextButton(
+                onPressed: () {},
+                child: const Text(
+                  "Resend Code (00:59)",
+                  style: TextStyle(
+                    color: AppTheme.accent,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -160,6 +206,8 @@ class _OTPScreenState extends State<OTPScreen> {
       verificationId: widget.verificationId,
       smsCode: smsCode,
       onSuccess: () async {
+        final navigator = Navigator.of(context);
+
         // 1. check database if the current user exist
         bool userExits = await authProvider.checkUserExistById();
         if (userExits) {
@@ -168,11 +216,11 @@ class _OTPScreenState extends State<OTPScreen> {
           // 2. get user data from database
 
           if (isBlocked) {
+            if (!mounted) return;
             // Navigate to Block Screen if blocked
-            Navigator.pushReplacement(
-              context,
+            navigator.pushReplacement(
               MaterialPageRoute(
-                builder: (context) => const BlockedScreen(),
+                builder: (_) => const BlockedScreen(),
               ),
             );
           } else {
@@ -182,10 +230,17 @@ class _OTPScreenState extends State<OTPScreen> {
 
             if (isUserComplete) {
               // Navigate to dashboard if profile is complete
-              navigate(isSingedIn: true);
+              if (!mounted) return;
+              navigator.pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const HomePage()),
+                (route) => false,
+              );
             } else {
               // Navigate to driver registration if profile is incomplete
-              navigate(isSingedIn: false);
+              if (!mounted) return;
+              navigator.push(
+                MaterialPageRoute(builder: (_) => const UserInformationScreen()),
+              );
               commonMethods.displaySnackBar(
                 "Fill your missing information!",
                 context,
@@ -194,23 +249,12 @@ class _OTPScreenState extends State<OTPScreen> {
           }
         } else {
           // navigate to user information screen
-          navigate(isSingedIn: false);
+          if (!mounted) return;
+          navigator.push(
+            MaterialPageRoute(builder: (_) => const UserInformationScreen()),
+          );
         }
       },
     );
-  }
-
-  void navigate({required bool isSingedIn}) {
-    if (isSingedIn) {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-          (route) => false);
-    } else {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const UserInformationScreen()));
-    }
   }
 }

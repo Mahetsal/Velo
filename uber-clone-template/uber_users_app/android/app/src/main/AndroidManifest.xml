@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
   <!-- Add network permissions here -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -10,9 +11,15 @@
 
     <application
     
-        android:label="Velo Users App"
+        android:label="Velo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- Prevent startup crash if Firebase auto-init fails on emulator images.
+             Firebase is initialized manually in Dart with try/catch. -->
+        <provider
+            android:name="com.google.firebase.provider.FirebaseInitProvider"
+            tools:node="remove" />
 
         <activity
             android:name=".MainActivity"
@@ -43,7 +50,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDe0aTCLr-5gNtRMfWu6GBbm8jkbaZMejg"/>
+            android:value="${MAPS_API_KEY}"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

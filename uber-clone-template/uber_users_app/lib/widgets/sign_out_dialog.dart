@@ -5,8 +5,12 @@ class SignOutDialog extends StatelessWidget {
   final String? description;
   final VoidCallback onSignOut;
 
-  SignOutDialog(
-      {super.key, this.title, this.description, required this.onSignOut});
+  const SignOutDialog({
+    super.key,
+    this.title,
+    this.description,
+    required this.onSignOut,
+  });
 
   @override
   Widget build(BuildContext context) {

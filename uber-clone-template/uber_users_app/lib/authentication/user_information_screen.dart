@@ -1,16 +1,16 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_users_app/appInfo/auth_provider.dart';
 import 'package:uber_users_app/methods/common_methods.dart';
 import 'package:uber_users_app/pages/home_page.dart';
 import 'package:uber_users_app/pages/terms_page.dart';
+import 'package:uber_users_app/theme/app_theme.dart';
+import 'package:uber_users_app/l10n/l10n_ext.dart';
 
 import '../models/user_model.dart';
 
 class UserInformationScreen extends StatefulWidget {
-  const UserInformationScreen({Key? key}) : super(key: key);
+  const UserInformationScreen({super.key});
 
   @override
   State<UserInformationScreen> createState() => _UserInformationScreenState();
@@ -51,114 +51,102 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
     final authProvider = Provider.of<AuthenticationProvider>(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
+      backgroundColor: AppTheme.surface,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: const Color(0xFFF5F7FB),
-        centerTitle: true,
-        title: const Text(
-          'Profile Setup',
-          style: TextStyle(fontWeight: FontWeight.w700),
+        title: Text(context.l10n.profileSetup),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => Navigator.maybePop(context),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 25.0, horizontal: 35),
-              child: Form(
-                key: _formKey,
-                child: Column(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Let's complete your profile",
-                      style: TextStyle(
-                        color: Color(0xFF667085),
-                        fontSize: 14,
-                      ),
+                  Text(
+                    context.l10n.completeYourProfile,
+                    style: const TextStyle(
+                      color: AppTheme.onSurfaceMuted,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 220,
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceLowest,
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    alignment: Alignment.center,
+                    child: Image.asset(
+                      "assets/images/avatarman.png",
+                      height: 190,
+                      fit: BoxFit.contain,
                     ),
                   ),
                   const SizedBox(height: 18),
-                  Column(
-                    children: [
-                      // textFormFields
-                      myTextFormField(
-                        hintText: 'Enter Your Full Name',
-                        icon: Icons.account_circle,
-                        textInputType: TextInputType.name,
-                        maxLines: 1,
-                        maxLength: 25,
-                        textEditingController: nameController,
-                        enabled: true,
-                        validator: (value) {
-                          if (value == null || value.trim().length < 3) {
-                            return "Name must be at least 3 characters";
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      myTextFormField(
-                        hintText: 'Enter Your Email Address',
-                        icon: Icons.account_circle,
-                        textInputType: TextInputType.emailAddress,
-                        maxLines: 1,
-                        maxLength: 25,
-                        textEditingController: gmailController,
-                        enabled: authProvider.isGoogleSignedIn ? false : true,
-                        validator: (value) {
-                          final email = (value ?? '').trim();
-                          if (email.isEmpty || !email.contains('@')) {
-                            return "Enter a valid email address";
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      myTextFormField(
-                        hintText: 'Enter your phone number',
-                        icon: Icons.phone,
-                        textInputType: TextInputType.number,
-                        maxLines: 1,
-                        maxLength: 15,
-                        textEditingController: phoneController,
-                        enabled: true,
-                        validator: (value) {
-                          final cleaned =
-                              (value ?? '').replaceAll(RegExp(r'[^0-9]'), '');
-                          if (cleaned.length < 7 || cleaned.length > 15) {
-                            return "Enter a valid phone number";
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
+                  _UrbanField(
+                    controller: nameController,
+                    label: context.l10n.fullName,
+                    icon: Icons.person_outline,
+                    enabled: true,
+                    validator: (value) {
+                      if (value == null || value.trim().length < 3) {
+                        return context.l10n.nameMinChars;
+                      }
+                      return null;
+                    },
                   ),
-                  const SizedBox(
-                    height: 20,
+                  const SizedBox(height: 12),
+                  _UrbanField(
+                    controller: gmailController,
+                    label: context.l10n.emailAddress,
+                    icon: Icons.mail_outline,
+                    enabled: authProvider.isGoogleSignedIn ? false : true,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      final email = (value ?? '').trim();
+                      if (email.isEmpty || !email.contains('@')) {
+                        return context.l10n.enterValidEmailAddress;
+                      }
+                      return null;
+                    },
                   ),
+                  const SizedBox(height: 12),
+                  _UrbanField(
+                    controller: phoneController,
+                    label: context.l10n.phoneNumber,
+                    icon: Icons.phone_outlined,
+                    enabled: true,
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      final cleaned =
+                          (value ?? '').replaceAll(RegExp(r'[^0-9]'), '');
+                      if (cleaned.length < 7 || cleaned.length > 15) {
+                        return context.l10n.enterValidPhoneNumber;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 14),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Checkbox(
                         value: acceptedTerms,
                         onChanged: (v) {
-                          setState(() {
-                            acceptedTerms = v ?? false;
-                          });
+                          setState(() => acceptedTerms = v ?? false);
                         },
                       ),
                       Expanded(
                         child: Wrap(
                           children: [
-                            const Text("I agree to the "),
+                            Text(context.l10n.iAgreeToThe),
                             GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -168,59 +156,48 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
                                   ),
                                 );
                               },
-                              child: const Text(
-                                "Terms & Conditions",
-                                style: TextStyle(
-                                  color: Color(0xFF2563EB),
-                                  fontWeight: FontWeight.bold,
+                              child: Text(
+                                context.l10n.termsOfServiceText,
+                                style: const TextStyle(
+                                  color: AppTheme.accent,
+                                  fontWeight: FontWeight.w900,
                                 ),
                               ),
                             ),
+                            Text(context.l10n.dot),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 8,
-                  ),
+                  const SizedBox(height: 10),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: MediaQuery.of(context).size.height * 0.07,
+                    height: 58,
                     child: ElevatedButton(
-                      onPressed:
-                          saveUserDataToFireStore, // Correctly call the sendPhoneNumber function
-
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        backgroundColor: const Color(0xFF111827),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                      onPressed: saveUserDataToFireStore,
                       child: authProvider.isLoading
-                          ? const CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            )
-                          : const Text(
-                              "Continue",
-                              style: TextStyle(
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
                                 color: Colors.white,
-                                fontSize: 14,
                               ),
+                            )
+                          : Text(
+                              context.l10n.continueText,
+                              style: const TextStyle(fontWeight: FontWeight.w900),
                             ),
                     ),
                   ),
                 ],
-              ),
               ),
             ),
           ),
         ),
       ),
     );
-  }
+}
 
   Widget myTextFormField({
     required String hintText,
@@ -299,14 +276,14 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
     }
     if (!acceptedTerms) {
       commonMethods.displaySnackBar(
-          "Please accept Terms & Conditions to continue.", context);
+          context.l10n.pleaseAcceptTermsToContinue, context);
       return;
     }
     if (nameController.text.length >= 3) {
       final pendingPassword = authProvider.consumePendingPassword();
       if ((pendingPassword ?? "").length < 6) {
         commonMethods.displaySnackBar(
-          "Missing password. Please go back and set your password again.",
+          context.l10n.missingPasswordGoBack,
           context,
         );
         return;
@@ -328,7 +305,7 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
       );
     } else {
       commonMethods.displaySnackBar(
-          'Name must be atleast 3 characters', context);
+          context.l10n.nameMinChars, context);
     }
   }
 
@@ -337,5 +314,37 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
         (route) => false);
+  }
+}
+
+class _UrbanField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final bool enabled;
+  final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
+
+  const _UrbanField({
+    required this.controller,
+    required this.label,
+    required this.icon,
+    required this.enabled,
+    this.keyboardType,
+    this.validator,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      enabled: enabled,
+      keyboardType: keyboardType,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+      ),
+    );
   }
 }

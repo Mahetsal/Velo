@@ -1,15 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
-import 'package:uber_users_app/appInfo/app_info.dart';
+import 'package:uber_users_app/api/api_client.dart';
 import 'package:uber_users_app/firebase_options.dart';
 import 'package:uber_users_app/global/global_var.dart';
 
@@ -23,9 +19,6 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 class PushNotificationService {
   PushNotificationService._();
-
-  static const String _awsApiBaseUrl =
-      "https://xhmks5miz3rrn35sxdboeddoqa0jcajs.lambda-url.us-east-1.on.aws";
 
   static final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
@@ -137,13 +130,9 @@ class PushNotificationService {
     final uid = userID;
     if (uid.isEmpty) return;
     try {
-      final response = await http.put(
-        Uri.parse('$_awsApiBaseUrl/users/$uid'),
-        headers: const {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer public-migration-token',
-        },
-        body: jsonEncode({'deviceToken': token}),
+      final response = await ApiClient.put(
+        '/users/$uid',
+        body: {'deviceToken': token},
       );
       if (response.statusCode < 200 || response.statusCode >= 300) {
         debugPrint('deviceToken PUT failed: ${response.statusCode}');
@@ -156,33 +145,21 @@ class PushNotificationService {
   /// Sends a trip request notification to a driver device via the AWS notification API.
   static Future<void> sendNotificationToSelectedDriver(
     String deviceToken,
-    BuildContext context,
     String tripID,
+    String pickUpAddress,
+    String dropOffDestinationAddress,
   ) async {
-    String dropOffDesitinationAddress =
-        Provider.of<AppInfoClass>(context, listen: false)
-            .dropOffLocation!
-            .placeName
-            .toString();
-    String pickUpAddress = Provider.of<AppInfoClass>(context, listen: false)
-        .pickUpLocation!
-        .placeName
-        .toString();
     final Map<String, dynamic> payload = {
       "token": deviceToken,
       "tripID": tripID,
       "title": "New Trip Request From $userName",
       "body":
-          "PickUp Location: $pickUpAddress \nDropOff Location: $dropOffDesitinationAddress",
+          "PickUp Location: $pickUpAddress \nDropOff Location: $dropOffDestinationAddress",
     };
     try {
-      final response = await http.post(
-        Uri.parse("$_awsApiBaseUrl/notifications/driver-trip-request"),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer public-migration-token',
-        },
-        body: jsonEncode(payload),
+      final response = await ApiClient.post(
+        "/notifications/driver-trip-request",
+        body: payload,
       );
       if (response.statusCode != 200) {
         debugPrint('driver-trip-request API: ${response.statusCode}');

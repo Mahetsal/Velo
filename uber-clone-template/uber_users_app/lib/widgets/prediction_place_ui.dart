@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_users_app/appInfo/app_info.dart';
-import 'package:uber_users_app/methods/common_methods.dart';
 import 'package:uber_users_app/models/address_models.dart';
 import 'package:uber_users_app/models/prediction_model.dart';
 import 'package:uber_users_app/widgets/loading_dialog.dart';
 
 class PredictionPlaceUI extends StatefulWidget {
-  PredictionModel? predictedPlaceData;
+  final PredictionModel predictedPlaceData;
 
-  PredictionPlaceUI({super.key, this.predictedPlaceData});
+  const PredictionPlaceUI({super.key, required this.predictedPlaceData});
 
   @override
   State<PredictionPlaceUI> createState() => _PredictionPlaceUIState();
@@ -22,7 +21,7 @@ class _PredictionPlaceUIState extends State<PredictionPlaceUI> {
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) =>
-          LoadingDialog(messageText: "Getting details..."),
+          const LoadingDialog(messageText: "Getting details..."),
     );
 
     final pieces = placeId.split(",");
@@ -37,8 +36,8 @@ class _PredictionPlaceUIState extends State<PredictionPlaceUI> {
       return;
     }
     AddressModel dropOffLocation = AddressModel();
-    dropOffLocation.placeName = widget.predictedPlaceData?.secondary_text ??
-        widget.predictedPlaceData?.main_text ??
+    dropOffLocation.placeName = widget.predictedPlaceData.secondaryText ??
+        widget.predictedPlaceData.mainText ??
         "Selected destination";
     dropOffLocation.latitudePosition = lat;
     dropOffLocation.longitudePosition = lon;
@@ -53,7 +52,7 @@ class _PredictionPlaceUIState extends State<PredictionPlaceUI> {
     return ElevatedButton(
       onPressed: () {
         fetchClickedPlaceDetails(
-            widget.predictedPlaceData!.place_id.toString());
+            widget.predictedPlaceData.placeId.toString());
       },
       style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
@@ -75,7 +74,7 @@ class _PredictionPlaceUIState extends State<PredictionPlaceUI> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      widget.predictedPlaceData!.main_text.toString(),
+                      widget.predictedPlaceData.mainText.toString(),
                       overflow: TextOverflow.ellipsis,
                       style:
                           const TextStyle(fontSize: 16, color: Colors.black87),
@@ -84,7 +83,7 @@ class _PredictionPlaceUIState extends State<PredictionPlaceUI> {
                       height: 3,
                     ),
                     Text(
-                      widget.predictedPlaceData!.secondary_text.toString(),
+                      widget.predictedPlaceData.secondaryText.toString(),
                       overflow: TextOverflow.ellipsis,
                       style:
                           const TextStyle(fontSize: 13, color: Colors.black54),

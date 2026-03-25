@@ -1,0 +1,132 @@
+Velo rider app — store & release checklist
+===========================================
+
+1. APPLICATION ID & BUNDLE IDENTIFIER
+--------------------------------------
+[ ] Android: Change applicationId from "com.example.uber_users_app" to your
+    production ID (e.g. "com.velojordan.rider") in android/app/build.gradle.
+[ ] iOS: Set PRODUCT_BUNDLE_IDENTIFIER in Xcode target settings to match
+    your App Store Connect record (e.g. "com.velojordan.rider").
+[ ] Ensure both IDs match what you registered in Play Console / ASC.
+
+2. SIGNING
+----------
+[ ] Android: Create a release keystore, add key.properties, and reference it
+    in build.gradle (replace signingConfigs.debug in the release block).
+    See: https://docs.flutter.dev/deployment/android#signing-the-app
+[ ] iOS: Configure a distribution provisioning profile and certificate in
+    Xcode → Runner → Signing & Capabilities.
+
+3. API KEY SECURITY (Google Maps)
+---------------------------------
+Keys are now loaded from build-time config instead of being hardcoded.
+
+  Android:
+  [ ] Add MAPS_API_KEY=<your key> to android/local.properties (git-ignored).
+      See android/local.properties.example for the template.
+  [ ] In Google Cloud Console → Credentials, restrict the Android key:
+      • Application restrictions → Android apps
+      • Add package name (your applicationId) + SHA-1 fingerprint for
+        both debug and release keystores.
+
+  iOS:
+  [ ] Add your key to ios/Flutter/Secrets.xcconfig (git-ignored).
+      See ios/Flutter/Secrets.xcconfig.example for the template.
+  [ ] In Google Cloud Console → Credentials, restrict the iOS key:
+      • Application restrictions → iOS apps
+      • Add your bundle identifier.
+
+  General:
+  [ ] Use SEPARATE keys for Android and iOS if possible.
+  [ ] If the repo was ever public, rotate (regenerate) the key in Cloud Console
+      and update local.properties / Secrets.xcconfig.
+  [ ] For CI builds, inject MAPS_API_KEY as an environment variable / secret.
+
+4. PRIVACY & LEGAL (in-app)
+----------------------------
+[ ] Privacy summary is accessible at Settings → Privacy & data,
+    in the drawer, and on the About page.
+[ ] Terms are accessible at Settings → Terms of Service, in the drawer,
+    and on the About page.
+[ ] Registration screen requires accepting Terms and acknowledges Privacy.
+[ ] Replace placeholder privacy / terms copy with counsel-approved text
+    before production release.
+[ ] Provide a privacy policy URL for Play Console and App Store Connect
+    (the same text or an expanded web version).
+
+5. INFO.PLIST / MANIFEST REVIEW
+--------------------------------
+[ ] iOS Info.plist location usage strings are clear and specific.
+    (NSLocationWhenInUseUsageDescription, NSLocationAlwaysUsageDescription, etc.)
+[ ] CFBundleDisplayName is "Velo" (not "Velo Users App").
+[ ] Android manifest label is "Velo".
+[ ] If you add photo/camera/contacts permissions later, provide usage strings.
+
+6. PLAY STORE LISTING (Google Play Console)
+---------------------------------------------
+[ ] App name: "Velo — Ride in Jordan"  (or your preferred store name)
+[ ] Short description (80 chars max, per locale):
+    EN: "Request rides across Amman & Jordan. Always 5% cheaper."
+    AR: "اطلب رحلات في عمّان والأردن. أرخص دائمًا بنسبة 5%."
+[ ] Full description (4000 chars max): expand on features, safety, wallet.
+[ ] Feature graphic: 1024×500 PNG/JPEG.
+[ ] Screenshots: min 2, recommended 4-8, for phone (and tablet if supported).
+    Include at least: home/map, ride booking, trip in progress, account.
+    Provide screenshots for both EN and AR locales.
+[ ] App icon: 512×512 PNG (32-bit, no alpha).
+[ ] Content rating: complete the questionnaire accurately (ride-hailing,
+    location tracking, user-generated content via driver names).
+[ ] Data safety section: declare location (precise, approximate), account info
+    (phone, email, name), financial info (wallet balance), and app activity.
+[ ] Category: Maps & Navigation or Travel & Local.
+[ ] Support email + URL (link to in-app support page or a web equivalent).
+[ ] Privacy policy URL (required).
+
+7. APP STORE LISTING (App Store Connect)
+------------------------------------------
+[ ] App name: "Velo — Ride in Jordan"
+[ ] Subtitle (30 chars): "Request rides. Save more."
+[ ] Keywords (100 chars, comma-separated):
+    "ride,taxi,Jordan,Amman,transport,driver,cheap,velo,carpool"
+[ ] Description: mirror Play Store full description.
+[ ] Screenshots: required for 6.5" and 5.5" iPhones. iPad optional.
+    Provide localized sets for EN and AR.
+[ ] App icon: supplied via Assets.xcassets (already configured).
+[ ] App Privacy (nutrition label):
+    - Data linked to you: contact info (phone, email, name), location,
+      identifiers, usage data, financial info (wallet).
+    - Purposes: app functionality, analytics.
+[ ] Support URL + Marketing URL.
+[ ] Privacy policy URL (required).
+[ ] Age rating: 4+ (no objectionable content).
+
+8. CRASHLYTICS & SYMBOLS
+--------------------------
+[ ] Android: Crashlytics Gradle plugin is already applied (build.gradle).
+    Release builds upload mapping files automatically.
+[ ] iOS: After archiving, upload dSYMs via Xcode Organizer or use:
+    firebase crashlytics:symbols:upload --app=<APP_ID> <path-to-dSYMs>
+[ ] Verify crash-free rate in Firebase Console after first release.
+
+9. VERSION & BUILD NUMBER
+--------------------------
+[ ] Bump version in pubspec.yaml before each release.
+    Format: MAJOR.MINOR.PATCH+BUILD  (e.g. 1.0.3+4 → 1.1.0+5)
+[ ] Android versionCode must be strictly increasing for each upload.
+[ ] iOS CFBundleVersion must be strictly increasing per build.
+
+10. PRE-SUBMISSION SMOKE TEST
+-------------------------------
+[ ] Build release APK/AAB: flutter build appbundle --release
+[ ] Build release IPA: flutter build ipa --release
+[ ] Install on a physical device and verify:
+    • Registration / login flow works
+    • Map loads and location marker appears
+    • Can search destination and see route
+    • Ride request flow completes (use test/staging backend)
+    • Privacy & Terms pages are accessible from Settings, drawer, About
+    • Wallet page loads
+    • Push notifications arrive
+    • App name on home screen reads "Velo"
+[ ] Run flutter analyze (zero errors, minimal warnings).
+[ ] Run flutter test (all tests pass).

@@ -3,6 +3,7 @@ import 'package:uber_users_app/methods/push_notification_service.dart';
 import 'package:uber_users_app/pages/account_page.dart';
 import 'package:uber_users_app/pages/home_page.dart';
 import 'package:uber_users_app/pages/trips_history_page.dart';
+import 'package:uber_users_app/l10n/l10n_ext.dart';
 
 class UserRootPage extends StatefulWidget {
   const UserRootPage({super.key});
@@ -36,10 +37,19 @@ class _UserRootPageState extends State<UserRootPage> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (value) => setState(() => _index = value),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.map), label: "Map"),
-          NavigationDestination(icon: Icon(Icons.history), label: "History"),
-          NavigationDestination(icon: Icon(Icons.person), label: "Account"),
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.home_outlined),
+            label: context.l10n.home,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.receipt_long_outlined),
+            label: context.l10n.trips,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.person_outline),
+            label: context.l10n.account,
+          ),
         ],
       ),
     );

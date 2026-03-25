@@ -3,17 +3,18 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uber_users_app/api/api_client.dart';
 import 'package:uber_users_app/authentication/register_screen.dart';
 import 'package:uber_users_app/methods/common_methods.dart';
+import 'package:uber_users_app/methods/phone_utils.dart';
 import 'package:uber_users_app/global/global_var.dart';
 import '../models/user_model.dart';
 
 class AuthenticationProvider extends ChangeNotifier {
-  static const String _awsApiBaseUrl =
-      "https://xhmks5miz3rrn35sxdboeddoqa0jcajs.lambda-url.us-east-1.on.aws";
   static const String _sessionUidKey = "user_uid";
   static const String _sessionPhoneKey = "user_phone";
   static const String _sessionEmailKey = "user_email";
+  static const String _sessionAuthTokenKey = "auth_token";
   CommonMethods commonMethods = CommonMethods();
   bool _isLoading = false;
   bool _isSuccessful = false;
@@ -21,6 +22,7 @@ class AuthenticationProvider extends ChangeNotifier {
   bool _isGoogleSignInLoading = false;
   String? _uid;
   String? _phoneNumber;
+  String? _authToken;
 
   UserModel? _userModel;
 
@@ -32,10 +34,45 @@ class AuthenticationProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isGoogleSignedIn => _isGoogleSignedIn;
   bool get isGoogleSigInLoading => _isGoogleSignInLoading;
+  String? get authToken => _authToken;
 
   String? _googleEmail;
   String? _pendingPlainPassword;
   String? get signedInEmail => _googleEmail;
+
+  String? _extractAuthToken(Map<String, dynamic> payload) {
+    final candidates = <String>[
+      "token",
+      "accessToken",
+      "access_token",
+      "idToken",
+      "id_token",
+      "jwt",
+    ];
+    for (final key in candidates) {
+      final v = payload[key];
+      if (v is String && v.trim().isNotEmpty) return v.trim();
+    }
+    final nested = payload["auth"];
+    if (nested is Map) {
+      for (final key in candidates) {
+        final v = nested[key];
+        if (v is String && v.trim().isNotEmpty) return v.trim();
+      }
+    }
+    return null;
+  }
+
+  Map<String, String> buildAuthHeaders({bool includeJsonContentType = false}) {
+    final headers = <String, String>{};
+    final token = _authToken;
+    headers["Authorization"] =
+        "Bearer ${(token != null && token.isNotEmpty) ? token : "public-migration-token"}";
+    if (includeJsonContentType) {
+      headers["Content-Type"] = "application/json";
+    }
+    return headers;
+  }
 
   Future<bool> loginWithPhone({
     required BuildContext context,
@@ -44,13 +81,14 @@ class AuthenticationProvider extends ChangeNotifier {
   }) async {
     startLoading();
     try {
-      final normalizedPhone = _normalizeJordanPhone(phoneNumber);
+      final normalizedPhone = normalizeJordanPhone(phoneNumber);
       final response = await http.post(
-        Uri.parse("$_awsApiBaseUrl/users/login"),
+        Uri.parse("${ApiClient.baseUrl}/users/login"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"phone": normalizedPhone, "password": password}),
       );
       if (response.statusCode != 200) {
+        if (!context.mounted) return false;
         commonMethods.displaySnackBar(
           "Invalid phone or password.",
           context,
@@ -58,9 +96,11 @@ class AuthenticationProvider extends ChangeNotifier {
         return false;
       }
       final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final token = _extractAuthToken(data);
       final item = (data["item"] ?? {}) as Map;
       final existingId = item["id"]?.toString() ?? "";
       if (existingId.isEmpty) {
+        if (!context.mounted) return false;
         commonMethods.displaySnackBar(
           "Invalid phone or password.",
           context,
@@ -71,17 +111,25 @@ class AuthenticationProvider extends ChangeNotifier {
       _uid = existingId;
       _phoneNumber = normalizedPhone;
       _googleEmail = item["email"]?.toString();
+      _authToken = token;
+      ApiClient.setAuthToken(token);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_sessionUidKey, _uid!);
       await prefs.setString(_sessionPhoneKey, _phoneNumber ?? "");
       if (_googleEmail != null && _googleEmail!.isNotEmpty) {
         await prefs.setString(_sessionEmailKey, _googleEmail!);
       }
+      if (_authToken != null && _authToken!.isNotEmpty) {
+        await prefs.setString(_sessionAuthTokenKey, _authToken!);
+      } else {
+        await prefs.remove(_sessionAuthTokenKey);
+      }
       userID = _uid ?? "";
       _isSuccessful = true;
       notifyListeners();
       return true;
     } catch (e) {
+      if (!context.mounted) return false;
       commonMethods.displaySnackBar("Login failed: $e", context);
       return false;
     } finally {
@@ -96,15 +144,16 @@ class AuthenticationProvider extends ChangeNotifier {
   }) async {
     startLoading();
     try {
-      final normalizedPhone = _normalizeJordanPhone(phoneNumber);
+      final normalizedPhone = normalizeJordanPhone(phoneNumber);
       final response = await http.post(
-        Uri.parse("$_awsApiBaseUrl/users/reset-password"),
+        Uri.parse("${ApiClient.baseUrl}/users/reset-password"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(
           {"phone": normalizedPhone, "newPassword": newPassword.trim()},
         ),
       );
       if (response.statusCode == 200) {
+        if (!context.mounted) return true;
         commonMethods.displaySnackBar(
           "Password reset successful. You can now log in.",
           context,
@@ -113,31 +162,16 @@ class AuthenticationProvider extends ChangeNotifier {
       }
       final payload = jsonDecode(response.body) as Map<String, dynamic>;
       final error = payload["error"]?.toString() ?? "Password reset failed.";
+      if (!context.mounted) return false;
       commonMethods.displaySnackBar(error, context);
       return false;
     } catch (e) {
+      if (!context.mounted) return false;
       commonMethods.displaySnackBar("Password reset failed: $e", context);
       return false;
     } finally {
       stopLoading();
     }
-  }
-
-  String _normalizeJordanPhone(String phone) {
-    final digits = phone.replaceAll(RegExp(r'[^0-9]'), '');
-    if (digits.startsWith('962') && digits.length >= 12) {
-      return '+$digits';
-    }
-    if (digits.startsWith('0') && digits.length == 10) {
-      return '+962${digits.substring(1)}';
-    }
-    if (digits.length == 9) {
-      return '+962$digits';
-    }
-    if (phone.trim().startsWith('+')) {
-      return phone.trim();
-    }
-    return '+$digits';
   }
 
   void startLoading() {
@@ -174,11 +208,11 @@ class AuthenticationProvider extends ChangeNotifier {
   }) async {
     startLoading();
     try {
-      final normalizedPhone = _normalizeJordanPhone(phoneNumber);
+      final normalizedPhone = normalizeJordanPhone(phoneNumber);
       _phoneNumber = normalizedPhone;
       final existing = await http.get(
         Uri.parse(
-          "$_awsApiBaseUrl/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
+          "${ApiClient.baseUrl}/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
         ),
       );
       if (existing.statusCode == 200) {
@@ -200,6 +234,7 @@ class AuthenticationProvider extends ChangeNotifier {
       userID = _uid ?? "";
       notifyListeners();
     } catch (e) {
+      if (!context.mounted) return;
       commonMethods.displaySnackBar("Failed to continue: $e", context);
     } finally {
       stopLoading();
@@ -207,12 +242,12 @@ class AuthenticationProvider extends ChangeNotifier {
   }
 
   Future<bool> isPhoneUniqueAcrossUsersAndDrivers(String phoneNumber) async {
-    final normalized = _normalizeJordanPhone(phoneNumber);
+    final normalized = normalizeJordanPhone(phoneNumber);
     final u = await checkUserExistByPhone(normalized);
     if (u) return false;
     final r = await http.get(
       Uri.parse(
-        "$_awsApiBaseUrl/drivers/by-phone/${Uri.encodeComponent(normalized)}",
+        "${ApiClient.baseUrl}/drivers/by-phone/${Uri.encodeComponent(normalized)}",
       ),
     );
     if (r.statusCode != 200) return true;
@@ -247,10 +282,10 @@ class AuthenticationProvider extends ChangeNotifier {
       if (phone.isEmpty) {
         throw Exception("Phone number is required.");
       }
-      final normalizedPhone = _normalizeJordanPhone(phone);
+      final normalizedPhone = normalizeJordanPhone(phone);
       final existingByPhone = await http.get(
         Uri.parse(
-          "$_awsApiBaseUrl/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
+          "${ApiClient.baseUrl}/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
         ),
       );
       bool shouldCreate = true;
@@ -269,7 +304,7 @@ class AuthenticationProvider extends ChangeNotifier {
 
       final response = shouldCreate
           ? await http.post(
-              Uri.parse("$_awsApiBaseUrl/users"),
+              Uri.parse("${ApiClient.baseUrl}/users"),
               headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer public-migration-token"
@@ -277,7 +312,7 @@ class AuthenticationProvider extends ChangeNotifier {
               body: jsonEncode({...userModel.toMap(), "password": password}),
             )
           : await http.put(
-              Uri.parse("$_awsApiBaseUrl/users/${userModel.id}"),
+              Uri.parse("${ApiClient.baseUrl}/users/${userModel.id}"),
               headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer public-migration-token"
@@ -300,6 +335,7 @@ class AuthenticationProvider extends ChangeNotifier {
     } catch (e) {
       stopLoading();
       notifyListeners();
+      if (!context.mounted) return;
       commonMethods.displaySnackBar(e.toString(), context);
     }
   }
@@ -307,7 +343,7 @@ class AuthenticationProvider extends ChangeNotifier {
   // Method to check if user exists in Firebase Realtime Database
   Future<bool> checkUserExistByEmail(String email) async {
     final response = await http.get(
-      Uri.parse("$_awsApiBaseUrl/users/by-email/${Uri.encodeComponent(email)}"),
+      Uri.parse("${ApiClient.baseUrl}/users/by-email/${Uri.encodeComponent(email)}"),
     );
     if (response.statusCode != 200) return false;
     final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -316,10 +352,10 @@ class AuthenticationProvider extends ChangeNotifier {
 
   // Method to check if user exists in Firebase Realtime Database by phone number
   Future<bool> checkUserExistByPhone(String phoneNumber) async {
-    final normalizedPhone = _normalizeJordanPhone(phoneNumber);
+    final normalizedPhone = normalizeJordanPhone(phoneNumber);
     final response = await http.get(
       Uri.parse(
-        "$_awsApiBaseUrl/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
+        "${ApiClient.baseUrl}/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
       ),
     );
     if (response.statusCode != 200) return false;
@@ -330,7 +366,7 @@ class AuthenticationProvider extends ChangeNotifier {
   Future<bool> checkUserExistById() async {
     final currentUid = _uid;
     if (currentUid == null) return false;
-    final response = await http.get(Uri.parse("$_awsApiBaseUrl/users/$currentUid"));
+    final response = await http.get(Uri.parse("${ApiClient.baseUrl}/users/$currentUid"));
     if (response.statusCode != 200) return false;
     final data = jsonDecode(response.body) as Map<String, dynamic>;
     return (data["exists"] ?? false) == true;
@@ -341,7 +377,7 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final resolvedUid = _uid;
       if (resolvedUid == null) return;
-      final response = await http.get(Uri.parse("$_awsApiBaseUrl/users/$resolvedUid"));
+      final response = await http.get(Uri.parse("${ApiClient.baseUrl}/users/$resolvedUid"));
       if (response.statusCode == 200) {
         final payload = jsonDecode(response.body) as Map<String, dynamic>;
         final userData = (payload["item"] ?? <String, dynamic>{}) as Map;
@@ -363,7 +399,7 @@ class AuthenticationProvider extends ChangeNotifier {
         notifyListeners(); // Notify listeners to update the UI
       }
     } catch (e) {
-      print("An error occurred while fetching user data: $e");
+      // Swallow error; UI will reflect missing data safely.
     }
   }
 
@@ -371,7 +407,7 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final currentUid = _uid;
       if (currentUid == null) return false;
-      final response = await http.get(Uri.parse("$_awsApiBaseUrl/users/$currentUid"));
+      final response = await http.get(Uri.parse("${ApiClient.baseUrl}/users/$currentUid"));
       if (response.statusCode == 200) {
         final payload = jsonDecode(response.body) as Map<String, dynamic>;
         final driverData = (payload["item"] ?? <String, dynamic>{}) as Map;
@@ -400,7 +436,6 @@ class AuthenticationProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
-      print("An error occurred while checking block status: $e");
       return false; // Default to not blocked in case of an error
     }
   }
@@ -409,7 +444,7 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final currentUid = _uid;
       if (currentUid == null) return false;
-      final response = await http.get(Uri.parse("$_awsApiBaseUrl/users/$currentUid"));
+      final response = await http.get(Uri.parse("${ApiClient.baseUrl}/users/$currentUid"));
       if (response.statusCode == 200) {
         final payload = jsonDecode(response.body) as Map<String, dynamic>;
         final userData = (payload["item"] ?? <String, dynamic>{}) as Map;
@@ -432,7 +467,6 @@ class AuthenticationProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
-      print("An error occurred while checking user fields: $e");
       return false;
     }
   }
@@ -459,12 +493,16 @@ class AuthenticationProvider extends ChangeNotifier {
       _isGoogleSignedIn = false;
       _googleEmail = null;
       _pendingPlainPassword = null;
+      _authToken = null;
+      ApiClient.setAuthToken(null);
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_sessionUidKey);
       await prefs.remove(_sessionPhoneKey);
       await prefs.remove(_sessionEmailKey);
+      await prefs.remove(_sessionAuthTokenKey);
       notifyListeners();
 
+      if (!context.mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
@@ -476,6 +514,7 @@ class AuthenticationProvider extends ChangeNotifier {
       stopLoading();
     } catch (e) {
       stopLoading();
+      if (!context.mounted) return;
       commonMethods.displaySnackBar("Failed to sign out", context);
     }
   }
@@ -486,6 +525,8 @@ class AuthenticationProvider extends ChangeNotifier {
     userID = _uid ?? "";
     _phoneNumber = prefs.getString(_sessionPhoneKey);
     _googleEmail = prefs.getString(_sessionEmailKey);
+    _authToken = prefs.getString(_sessionAuthTokenKey);
+    ApiClient.setAuthToken(_authToken);
     notifyListeners();
   }
 

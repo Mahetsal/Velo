@@ -7,26 +7,48 @@ import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as ll;
 import 'package:provider/provider.dart';
 import 'package:uber_users_app/appInfo/app_info.dart';
+import 'package:uber_users_app/l10n/l10n_ext.dart';
 import 'package:uber_users_app/models/address_models.dart';
 
 import '../models/direction_details.dart';
 
 class CommonMethods {
-  checkConnectivity(BuildContext context) async {
+  /// Returns `true` when online, `false` otherwise (and shows a snackbar).
+  Future<bool> checkConnectivity(BuildContext context) async {
     var connectionResult = await Connectivity().checkConnectivity();
 
     if (connectionResult != ConnectivityResult.mobile &&
         connectionResult != ConnectivityResult.wifi) {
-      if (!context.mounted) return;
-      displaySnackBar(
-          "Your Internet is not Available. Check your connection. Try Again.",
-          context);
+      if (!context.mounted) return false;
+      displaySnackBar(context.l10n.noInternetConnection, context);
+      return false;
     }
+    return true;
   }
 
   displaySnackBar(String messageText, BuildContext context) {
     var snackBar = SnackBar(content: Text(messageText));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  /// Convenience: shows a SnackBar with an optional retry action.
+  static void showErrorSnackBar(
+    BuildContext context,
+    String message, {
+    VoidCallback? onRetry,
+  }) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        action: onRetry != null
+            ? SnackBarAction(
+                label: context.l10n.retry,
+                onPressed: onRetry,
+              )
+            : null,
+      ),
+    );
   }
 
   static sendRequestToAPI(String apiUrl) async {
@@ -41,11 +63,9 @@ class CommonMethods {
         var dataDecoded = jsonDecode(dataFromApi);
         return dataDecoded;
       } else {
-        print('error');
         return "error";
       }
     } catch (errorMsg) {
-      print(errorMsg);
       return "error";
     }
   }
@@ -74,6 +94,7 @@ class CommonMethods {
 
     var responseFromAPI = await sendRequestToAPI(apiGeoCodingUrl);
 
+    if (!context.mounted) return humanReadableAddress;
     if (responseFromAPI != "error" && responseFromAPI["display_name"] != null) {
       humanReadableAddress = responseFromAPI["display_name"].toString();
 

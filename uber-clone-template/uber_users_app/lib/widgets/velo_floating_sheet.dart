@@ -7,7 +7,7 @@ class VeloFloatingSheet extends StatelessWidget {
     required this.child,
     this.dark = false,
     this.showHandle = true,
-    this.padding = const EdgeInsets.fromLTRB(12, 0, 12, 12),
+    this.padding = const EdgeInsetsDirectional.fromSTEB(12, 0, 12, 12),
   });
 
   final Widget child;
