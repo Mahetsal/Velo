@@ -1,0 +1,39 @@
+# Flutter / Dart (all apps under uber-clone-template)
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.pub-cache/
+**/build/
+**/doc/api/
+
+# Android
+**/android/.gradle/
+**/android/**/local.properties
+**/android/**/captures/
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+
+# iOS / macOS
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/.last_build_id
+**/macos/Flutter/ephemeral/
+
+# IDE / OS
+.DS_Store
+.idea/
+*.iml
+*.ipr
+*.iws
+.history/
+
+# Logs / misc
+*.log
+*.class
+*.pyc
+*.swp
+
+# Symbolication / obfuscation
+**/app.*.symbols
+**/app.*.map.json

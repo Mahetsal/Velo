@@ -1,0 +1,35 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:us-east-1:982081052864:table/velo-users",
+        "arn:aws:dynamodb:us-east-1:982081052864:table/velo-users/index/*",
+        "arn:aws:dynamodb:us-east-1:982081052864:table/velo-drivers",
+        "arn:aws:dynamodb:us-east-1:982081052864:table/velo-drivers/index/*",
+        "arn:aws:dynamodb:us-east-1:982081052864:table/velo-trips",
+        "arn:aws:dynamodb:us-east-1:982081052864:table/velo-trips/index/*",
+        "arn:aws:dynamodb:us-east-1:982081052864:table/velo-promos",
+        "arn:aws:dynamodb:us-east-1:982081052864:table/velo-promos/index/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::velo-app-uploads-982081052864/*"
+      ]
+    }
+  ]
+}

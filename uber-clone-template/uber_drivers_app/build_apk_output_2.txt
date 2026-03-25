@@ -1,0 +1,27 @@
+﻿
+Running Gradle task 'assembleRelease'...                        
+Checking the license for package Android SDK Build-Tools 30.0.3 in C:\Users\Lenovo\AppData\Local\Android\sdk\licenses
+License for package Android SDK Build-Tools 30.0.3 accepted.
+Preparing "Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)".
+"Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)" ready.
+Installing Android SDK Build-Tools 30.0.3 in C:\Users\Lenovo\AppData\Local\Android\sdk\build-tools\30.0.3
+"Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)" complete.
+"Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)" finished.
+Checking the license for package Android SDK Platform 28 in C:\Users\Lenovo\AppData\Local\Android\sdk\licenses
+License for package Android SDK Platform 28 accepted.
+Preparing "Install Android SDK Platform 28 (revision: 6)".
+"Install Android SDK Platform 28 (revision: 6)" ready.
+Installing Android SDK Platform 28 in C:\Users\Lenovo\AppData\Local\Android\sdk\platforms\android-28
+"Install Android SDK Platform 28 (revision: 6)" complete.
+"Install Android SDK Platform 28 (revision: 6)" finished.
+Checking the license for package Android SDK Platform 33 in C:\Users\Lenovo\AppData\Local\Android\sdk\licenses
+License for package Android SDK Platform 33 accepted.
+Preparing "Install Android SDK Platform 33 (revision: 3)".
+"Install Android SDK Platform 33 (revision: 3)" ready.
+Installing Android SDK Platform 33 in C:\Users\Lenovo\AppData\Local\Android\sdk\platforms\android-33
+"Install Android SDK Platform 33 (revision: 3)" complete.
+"Install Android SDK Platform 33 (revision: 3)" finished.
+WARNING: [Processor] Library 'C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.android.exoplayer\exoplayer-ui\2.18.1\eed81d49b8b0e9a365cbec260dafb222d6e5bc67\exoplayer-ui-2.18.1.aar' contains references to both AndroidX and old support library. This seems like the library is partially migrated. Jetifier will try to rewrite the library anyway.
+ Example of androidX reference: 'androidx/core/app/NotificationCompat$Builder'
+ Example of support library reference: 'android/support/v4/media/session/MediaSessionCompat$Token'
+Running Gradle task 'assembleRelease'...                          567.5s

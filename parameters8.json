@@ -1,0 +1,6 @@
+{
+  "commands": [
+    "echo --- TESTING CONNECTION ---",
+    "cd /home/ubuntu/uber/apps/server && npx ts-node src/test-connection.ts || npx prisma db push --preview-feature"
+  ]
+}

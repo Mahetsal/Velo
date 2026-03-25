@@ -1,0 +1,12 @@
+{
+  "commands": [
+    "echo --- READING .ENV ---",
+    "cat /home/ubuntu/uber/apps/server/.env",
+    "echo --- PRISMA SCHEMA ---",
+    "cat /home/ubuntu/uber/apps/server/prisma/schema.prisma",
+    "echo --- CHECKING DOCKER ---",
+    "sudo docker ps 2>/dev/null || echo 'No Docker'",
+    "echo --- CHECKING POSTGRES ---",
+    "sudo systemctl status postgresql 2>/dev/null || echo 'No systemd postgres'"
+  ]
+}

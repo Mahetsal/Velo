@@ -1,0 +1,39 @@
+
+Running Gradle task 'assembleRelease'...                        
+
+FAILURE: Build completed with 2 failures.
+
+1: Task failed with an exception.
+-----------
+* Where:
+Build file 'C:\Users\Lenovo\AppData\Local\Pub\Cache\hosted\pub.dev\connectivity_plus-7.0.0\android\build.gradle' line: 26
+
+* What went wrong:
+A problem occurred evaluating project ':connectivity_plus'.
+> Could not get unknown property 'flutter' for extension 'android' of type com.android.build.gradle.LibraryExtension.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+2: Task failed with an exception.
+-----------
+* What went wrong:
+A problem occurred configuring project ':connectivity_plus'.
+> Failed to notify project evaluation listener.
+   > Cannot invoke method substring() on null object
+   > compileSdkVersion is not specified. Please add it to build.gradle
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+BUILD FAILED in 32s
+Running Gradle task 'assembleRelease'...                           33.2s
+Gradle task assembleRelease failed with exit code 1

@@ -1,0 +1,49 @@
+
+Running Gradle task 'assembleRelease'...                        
+Warning: The plugin flutter_geofire requires Android SDK version 36 or higher.
+For more information about build configuration, see https://flutter.dev/to/review-gradle-config.
+Warning: The plugin flutter_plugin_android_lifecycle requires Android SDK version 35 or higher.
+For more information about build configuration, see https://flutter.dev/to/review-gradle-config.
+Warning: The plugin image_cropper requires Android SDK version 36 or higher.
+For more information about build configuration, see https://flutter.dev/to/review-gradle-config.
+Warning: The plugin permission_handler_android requires Android SDK version 35 or higher.
+For more information about build configuration, see https://flutter.dev/to/review-gradle-config.
+Your project is configured to compile against Android SDK 34, but the following plugin(s) require to be compiled against a higher Android SDK version:
+- flutter_geofire compiles against Android SDK 36
+- flutter_plugin_android_lifecycle compiles against Android SDK 35
+- image_cropper compiles against Android SDK 36
+- permission_handler_android compiles against Android SDK 35
+Fix this issue by compiling against the highest Android SDK version (they are backward compatible).
+Add the following to C:\Users\Lenovo\Desktop\Velo\uber-clone-template\uber_drivers_app\android\app\build.gradle:
+
+    android {
+        compileSdk = 36
+        ...
+    }
+
+Checking the license for package Android SDK Build-Tools 33.0.1 in C:\Users\Lenovo\AppData\Local\Android\sdk\licenses
+License for package Android SDK Build-Tools 33.0.1 accepted.
+Preparing "Install Android SDK Build-Tools 33.0.1 v.33.0.1".
+"Install Android SDK Build-Tools 33.0.1 v.33.0.1" ready.
+Installing Android SDK Build-Tools 33.0.1 in C:\Users\Lenovo\AppData\Local\Android\sdk\build-tools\33.0.1
+"Install Android SDK Build-Tools 33.0.1 v.33.0.1" complete.
+"Install Android SDK Build-Tools 33.0.1 v.33.0.1" finished.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':firebase_core:compileReleaseJavaWithJavac'.
+> Could not resolve all files for configuration ':firebase_core:androidJdkImage'.
+   > Failed to transform core-for-system-modules.jar to match attributes {artifactType=_internal_android_jdk_image, org.gradle.libraryelements=jar, org.gradle.usage=java-runtime}.
+      > Execution failed for JdkImageTransform: C:\Users\Lenovo\AppData\Local\Android\sdk\platforms\android-34\core-for-system-modules.jar.
+         > Error while executing process C:\Program Files\Android\Android Studio\jbr\bin\jlink.exe with arguments {--module-path C:\Users\Lenovo\.gradle\caches\transforms-3\c1df0a01651e9390d6d3a454dc25bf11\transformed\output\temp\jmod --add-modules java.base --output C:\Users\Lenovo\.gradle\caches\transforms-3\c1df0a01651e9390d6d3a454dc25bf11\transformed\output\jdkImage --disable-plugin system-modules}
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 1m 39s
+Running Gradle task 'assembleRelease'...                          100.7s
+Gradle task assembleRelease failed with exit code 1

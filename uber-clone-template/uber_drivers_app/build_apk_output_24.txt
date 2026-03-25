@@ -1,0 +1,66 @@
+
+Running Gradle task 'assembleRelease'...                        
+Your project is configured with Android NDK 23.1.7779620, but the following plugin(s) depend on a different Android NDK version:
+- assets_audio_player requires Android NDK 25.1.8937393
+- assets_audio_player_web requires Android NDK 25.1.8937393
+- cloud_firestore requires Android NDK 25.1.8937393
+- connectivity_plus requires Android NDK 25.1.8937393
+- firebase_auth requires Android NDK 25.1.8937393
+- firebase_core requires Android NDK 25.1.8937393
+- firebase_database requires Android NDK 25.1.8937393
+- firebase_messaging requires Android NDK 25.1.8937393
+- firebase_storage requires Android NDK 25.1.8937393
+- flutter_geofire requires Android NDK 25.1.8937393
+- flutter_notification_channel requires Android NDK 25.1.8937393
+- flutter_plugin_android_lifecycle requires Android NDK 25.1.8937393
+- geolocator_android requires Android NDK 25.1.8937393
+- google_maps_flutter_android requires Android NDK 25.1.8937393
+- google_sign_in_android requires Android NDK 25.1.8937393
+- image_cropper requires Android NDK 25.1.8937393
+- image_picker_android requires Android NDK 25.1.8937393
+- path_provider_android requires Android NDK 25.1.8937393
+- permission_handler_android requires Android NDK 25.1.8937393
+- restart_app requires Android NDK 25.1.8937393
+- shared_preferences_android requires Android NDK 25.1.8937393
+- sqflite requires Android NDK 25.1.8937393
+- url_launcher_android requires Android NDK 25.1.8937393
+Fix this issue by using the highest Android NDK version (they are backward compatible).
+Add the following to C:\Users\Lenovo\Desktop\Velo\uber-clone-template\uber_drivers_app\android\app\build.gradle:
+
+    android {
+        ndkVersion = "25.1.8937393"
+        ...
+    }
+
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 4316 bytes (99.7% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+WARNING: [Processor] Library 'C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.android.exoplayer\exoplayer-ui\2.18.1\eed81d49b8b0e9a365cbec260dafb222d6e5bc67\exoplayer-ui-2.18.1.aar' contains references to both AndroidX and old support library. This seems like the library is partially migrated. Jetifier will try to rewrite the library anyway.
+ Example of androidX reference: 'androidx/core/app/NotificationCompat$Builder'
+ Example of support library reference: 'android/support/v4/media/session/MediaSessionCompat$Token'
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:mergeReleaseResources'.
+> Multiple task action failures occurred:
+   > A failure occurred while executing com.android.build.gradle.internal.res.Aapt2CompileRunnable
+      > Android resource compilation failed
+        ERROR: C:\Users\Lenovo\Desktop\Velo\uber-clone-template\uber_drivers_app\android\app\src\main\res\mipmap-xxxhdpi\ic_launcher.png: AAPT: error: file failed to compile.
+
+   > A failure occurred while executing com.android.build.gradle.internal.res.Aapt2CompileRunnable
+      > Android resource compilation failed
+        ERROR: C:\Users\Lenovo\Desktop\Velo\uber-clone-template\uber_drivers_app\android\app\src\main\res\mipmap-mdpi\ic_launcher.png: AAPT: error: file failed to compile.
+
+   > A failure occurred while executing com.android.build.gradle.internal.res.Aapt2CompileRunnable
+      > Android resource compilation failed
+        ERROR: C:\Users\Lenovo\Desktop\Velo\uber-clone-template\uber_drivers_app\android\app\src\main\res\mipmap-xxhdpi\ic_launcher.png: AAPT: error: file failed to compile.
+
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 6m 20s
+Running Gradle task 'assembleRelease'...                          382.2s
+Gradle task assembleRelease failed with exit code 1

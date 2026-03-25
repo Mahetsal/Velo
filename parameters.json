@@ -1,0 +1,10 @@
+{
+  "commands": [
+    "echo --- HOME ---",
+    "ls -la /home",
+    "echo --- ROOT ---",
+    "ls -la /",
+    "echo --- VAR ---",
+    "ls -la /var"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "406099696497",
+    "firebase_url": "https://flutterfire-e2e-tests-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "flutterfire-e2e-tests",
+    "storage_bucket": "flutterfire-e2e-tests.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406099696497:android:74ebb073d7727cd43574d0",
+        "android_client_info": {
+          "package_name": "com.example.uber_users_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "406099696497-a12gakvts4epfk5pkio7dphc1anjiggc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdRjCVZlhrq72RuEklEyyxYlBRCYhI2Sw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "406099696497-a12gakvts4epfk5pkio7dphc1anjiggc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "406099696497-0mofiof3ofcgmpmirb6q0fllvb372sme.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.flutter.plugins.firebase.example"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

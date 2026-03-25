@@ -1,0 +1,9 @@
+{
+  "commands": [
+    "echo --- SEARCHING FOR APPS/SERVER ---",
+    "find /home -maxdepth 4 -type d -name 'server' 2>/dev/null",
+    "find /home -maxdepth 4 -type d -name 'apps' 2>/dev/null",
+    "find /var -maxdepth 4 -type d -name 'server' 2>/dev/null",
+    "find /var -maxdepth 4 -type d -name 'apps' 2>/dev/null"
+  ]
+}

@@ -1,0 +1,22 @@
+﻿
+Running Gradle task 'assembleRelease'...                        
+Running Gradle task 'assembleRelease'...                         1,871ms
+
+ظ¤îظ¤ Flutter Fix ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤
+ظ¤é [!] Your project's Gradle version is incompatible with the Java version that Flutter is using    ظ¤é
+ظ¤é for Gradle.                                                                                      ظ¤é
+ظ¤é                                                                                                  ظ¤é
+ظ¤é If you recently upgraded Android Studio, consult the migration guide at                          ظ¤é
+ظ¤é https://flutter.dev/to/to/java-gradle-incompatibility.                                           ظ¤é
+ظ¤é                                                                                                  ظ¤é
+ظ¤é Otherwise, to fix this issue, first, check the Java version used by Flutter by running `flutter  ظ¤é
+ظ¤é doctor --verbose`.                                                                               ظ¤é
+ظ¤é                                                                                                  ظ¤é
+ظ¤é Then, update the Gradle version specified in                                                     ظ¤é
+ظ¤é C:\Users\Lenovo\Desktop\Velo\uber-clone-template\uber_drivers_app\android\gradle\wrapper\gradle- ظ¤é
+ظ¤é wrapper.properties to be compatible with that Java version. See the link below for more          ظ¤é
+ظ¤é information on compatible Java/Gradle versions:                                                  ظ¤é
+ظ¤é https://docs.gradle.org/current/userguide/compatibility.html#java                                ظ¤é
+ظ¤é                                                                                                  ظ¤é
+ظ¤é                                                                                                  ظ¤é
+ظ¤¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ء

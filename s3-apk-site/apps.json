@@ -1,0 +1,29 @@
+[
+  {
+    "id": "users",
+    "name": "Velo User App",
+    "role": "For riders and customers",
+    "description": "Book rides, track drivers live, and manage your trips in one place.",
+    "version": "1.0.2",
+    "buildDate": "2026-03-24",
+    "apkPath": "./apks/velo-users.apk"
+  },
+  {
+    "id": "drivers",
+    "name": "Velo Driver App",
+    "role": "For drivers and captains",
+    "description": "Accept trip requests, navigate efficiently, and manage earnings.",
+    "version": "1.0.2",
+    "buildDate": "2026-03-24",
+    "apkPath": "./apks/velo-drivers.apk"
+  },
+  {
+    "id": "admin",
+    "name": "Velo Admin App",
+    "role": "For operations and admin teams",
+    "description": "Monitor platform activity, verify drivers, and control operations.",
+    "version": "1.0.2",
+    "buildDate": "2026-03-24",
+    "apkPath": "./apks/velo-admin.apk"
+  }
+]

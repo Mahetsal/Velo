@@ -1,0 +1,47 @@
+
+Running Gradle task 'assembleRelease'...                        
+WARNING: [Processor] Library 'C:\Users\Lenovo\.gradle\caches\modules-2\files-2.1\com.google.android.exoplayer\exoplayer-ui\2.18.1\eed81d49b8b0e9a365cbec260dafb222d6e5bc67\exoplayer-ui-2.18.1.aar' contains references to both AndroidX and old support library. This seems like the library is partially migrated. Jetifier will try to rewrite the library anyway.
+ Example of androidX reference: 'androidx/core/app/NotificationCompat$Builder'
+ Example of support library reference: 'android/support/v4/media/session/MediaSessionCompat$Token'
+e: file:///C:/Users/Lenovo/AppData/Local/Pub/Cache/hosted/pub.dev/assets_audio_player-3.1.1/android/src/main/kotlin/com/github/florent37/assets_audio_player/notification/NotificationService.kt:168:70 Unresolved reference 'drawable'.
+e: file:///C:/Users/Lenovo/AppData/Local/Pub/Cache/hosted/pub.dev/assets_audio_player-3.1.1/android/src/main/kotlin/com/github/florent37/assets_audio_player/notification/NotificationService.kt:172:82 Unresolved reference 'drawable'.
+e: file:///C:/Users/Lenovo/AppData/Local/Pub/Cache/hosted/pub.dev/assets_audio_player-3.1.1/android/src/main/kotlin/com/github/florent37/assets_audio_player/notification/NotificationService.kt:176:83 Unresolved reference 'drawable'.
+e: file:///C:/Users/Lenovo/AppData/Local/Pub/Cache/hosted/pub.dev/assets_audio_player-3.1.1/android/src/main/kotlin/com/github/florent37/assets_audio_player/notification/NotificationService.kt:180:82 Unresolved reference 'drawable'.
+e: file:///C:/Users/Lenovo/AppData/Local/Pub/Cache/hosted/pub.dev/assets_audio_player-3.1.1/android/src/main/kotlin/com/github/florent37/assets_audio_player/notification/NotificationService.kt:184:82 Unresolved reference 'drawable'.
+e: file:///C:/Users/Lenovo/AppData/Local/Pub/Cache/hosted/pub.dev/assets_audio_player-3.1.1/android/src/main/kotlin/com/github/florent37/assets_audio_player/notification/NotificationService.kt:188:82 Unresolved reference 'drawable'.
+
+FAILURE: Build completed with 2 failures.
+
+1: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':assets_audio_player:compileReleaseKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+2: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':firebase_core:compileReleaseJavaWithJavac'.
+> Could not resolve all files for configuration ':firebase_core:androidJdkImage'.
+   > Failed to transform core-for-system-modules.jar to match attributes {artifactType=_internal_android_jdk_image, org.gradle.libraryelements=jar, org.gradle.usage=java-runtime}.
+      > Execution failed for JdkImageTransform: C:\Users\Lenovo\AppData\Local\Android\sdk\platforms\android-34\core-for-system-modules.jar.
+         > Error while executing process C:\Program Files\Android\Android Studio\jbr\bin\jlink.exe with arguments {--module-path C:\Users\Lenovo\.gradle\caches\transforms-3\c1df0a01651e9390d6d3a454dc25bf11\transformed\output\temp\jmod --add-modules java.base --output C:\Users\Lenovo\.gradle\caches\transforms-3\c1df0a01651e9390d6d3a454dc25bf11\transformed\output\jdkImage --disable-plugin system-modules}
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+BUILD FAILED in 29s
+Running Gradle task 'assembleRelease'...                           30.5s
+Gradle task assembleRelease failed with exit code 1

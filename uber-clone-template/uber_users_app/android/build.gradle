@@ -1,0 +1,50 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// Flutter plugins (e.g. geolocator_android) reference flutter.compileSdkVersion in their
+// android {} block; the Flutter Gradle plugin only adds the full FlutterExtension on :app.
+// Do not set this on :app — it would replace the real FlutterExtension and break the plugin.
+subprojects { subproject ->
+    if (subproject.name != "app") {
+        subproject.ext.flutter = [
+            compileSdkVersion: 36,
+            minSdkVersion      : 23,
+        ]
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
+
+// Ensure Kotlin bytecode targets the same JVM as Java to avoid build failures
+// in plugins (e.g., `restart_app`) compiled with a different default.
+subprojects {
+    tasks.withType(JavaCompile).configureEach {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+}
+
+// Force legacy plugins (e.g., flutter_geofire) to compile against modern SDK.
+subprojects { subproject ->
+    subproject.plugins.withId("com.android.library") {
+        subproject.android {
+            compileSdkVersion 36
+        }
+    }
+}

@@ -1,0 +1,138 @@
+﻿
+Running Gradle task 'assembleRelease'...                        
+C:\Users\Lenovo\flutter
+\bin\flutter.bat : 
+warning: [options] 
+source value 8 is 
+obsolete and will be 
+removed in a future 
+release
+At line:1 char:1
++ C:\Users\Lenovo\flutt
+er\bin\flutter.bat 
+build apk *>&1 | 
+Out-File -En ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (warning: [opt   
+ io... future relea    
+se:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+warning: [options] 
+target value 8 is 
+obsolete and will be 
+removed in a future 
+release
+warning: [options] To 
+suppress warnings 
+about obsolete 
+options, use 
+-Xlint:-options.
+3 warnings
+warning: [options] 
+source value 8 is 
+obsolete and will be 
+removed in a future 
+release
+warning: [options] 
+target value 8 is 
+obsolete and will be 
+removed in a future 
+release
+warning: [options] To 
+suppress warnings 
+about obsolete 
+options, use 
+-Xlint:-options.
+3 warnings
+warning: [options] 
+source value 8 is 
+obsolete and will be 
+removed in a future 
+release
+warning: [options] 
+target value 8 is 
+obsolete and will be 
+removed in a future 
+release
+warning: [options] To 
+suppress warnings 
+about obsolete 
+options, use 
+-Xlint:-options.
+3 warnings
+
+FAILURE: Build failed 
+with an exception.
+
+* What went wrong:
+Execution failed for 
+task ':connectivity_plu
+s:compileReleaseJavaWit
+hJavac'.
+> Could not resolve 
+all files for 
+configuration ':connect
+ivity_plus:androidJdkIm
+age'.
+   > Failed to 
+transform core-for-syst
+em-modules.jar to 
+match attributes {artif
+actType=_internal_andro
+id_jdk_image, org.gradl
+e.libraryelements=jar, 
+org.gradle.usage=java-r
+untime}.
+      > Execution 
+failed for 
+JdkImageTransform: C:\U
+sers\Lenovo\AppData\Loc
+al\Android\sdk\platform
+s\android-34\core-for-s
+ystem-modules.jar.
+         > Error while 
+executing process 
+C:\Program 
+Files\Android\Android S
+tudio\jbr\bin\jlink.exe
+ with arguments 
+{--module-path C:\Users
+\Lenovo\.gradle\caches\
+transforms-3\9d3cba071d
+8c5155c83f01141f7312df\
+transformed\output\temp
+\jmod --add-modules 
+java.base --output C:\U
+sers\Lenovo\.gradle\cac
+hes\transforms-3\9d3cba
+071d8c5155c83f01141f731
+2df\transformed\output\
+jdkImage 
+--disable-plugin 
+system-modules}
+
+* Try:
+> Run with 
+--stacktrace option to 
+get the stack trace.
+> Run with --info or 
+--debug option to get 
+more log output.
+> Run with --scan to 
+get full insights.
+> Get more help at http
+s://help.gradle.org.
+
+BUILD FAILED in 2m 13s
+Running Gradle task 'assembleRelease'...                          135.4s
+Gradle task 
+assembleRelease failed 
+with exit code 1

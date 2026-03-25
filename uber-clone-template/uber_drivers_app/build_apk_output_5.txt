@@ -1,0 +1,56 @@
+﻿
+Running Gradle task 'assembleRelease'...                        
+C:\Users\Lenovo\flutter
+\bin\flutter.bat : 
+At line:1 char:1
++ C:\Users\Lenovo\flutt
+er\bin\flutter.bat 
+build apk *>&1 | 
+Out-File -En ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (:String) [],    
+ RemoteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+FAILURE: Build failed 
+with an exception.
+
+* Where:
+Build file 'C:\Users\Le
+novo\Desktop\Velo\uber-
+clone-template\uber_dri
+vers_app\android\build.
+gradle' line: 21
+
+* What went wrong:
+A problem occurred 
+evaluating root 
+project 'android'.
+> Cannot run Project.af
+terEvaluate(Closure) 
+when the project is 
+already evaluated.
+
+* Try:
+> Run with 
+--stacktrace option to 
+get the stack trace.
+> Run with --info or 
+--debug option to get 
+more log output.
+> Run with --scan to 
+get full insights.
+> Get more help at http
+s://help.gradle.org.
+
+BUILD FAILED in 1s
+Running Gradle task 'assembleRelease'...                         2,386ms
+Gradle task 
+assembleRelease failed 
+with exit code 1

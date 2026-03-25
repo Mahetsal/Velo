@@ -1,0 +1,104 @@
+
+Running Gradle task 'assembleRelease'...                        
+Your project is configured with Android NDK 23.1.7779620, but the following plugin(s) depend on a different Android NDK version:
+- assets_audio_player requires Android NDK 25.1.8937393
+- assets_audio_player_web requires Android NDK 25.1.8937393
+- cloud_firestore requires Android NDK 25.1.8937393
+- connectivity_plus requires Android NDK 25.1.8937393
+- firebase_auth requires Android NDK 25.1.8937393
+- firebase_core requires Android NDK 25.1.8937393
+- firebase_database requires Android NDK 25.1.8937393
+- firebase_messaging requires Android NDK 25.1.8937393
+- firebase_storage requires Android NDK 25.1.8937393
+- flutter_geofire requires Android NDK 25.1.8937393
+- flutter_notification_channel requires Android NDK 25.1.8937393
+- flutter_plugin_android_lifecycle requires Android NDK 25.1.8937393
+- geolocator_android requires Android NDK 25.1.8937393
+- google_maps_flutter_android requires Android NDK 25.1.8937393
+- google_sign_in_android requires Android NDK 25.1.8937393
+- image_cropper requires Android NDK 25.1.8937393
+- image_picker_android requires Android NDK 25.1.8937393
+- path_provider_android requires Android NDK 25.1.8937393
+- permission_handler_android requires Android NDK 25.1.8937393
+- restart_app requires Android NDK 25.1.8937393
+- shared_preferences_android requires Android NDK 25.1.8937393
+- sqflite_android requires Android NDK 25.1.8937393
+- url_launcher_android requires Android NDK 25.1.8937393
+Fix this issue by using the highest Android NDK version (they are backward compatible).
+Add the following to C:\Users\Lenovo\Desktop\Velo\uber-clone-template\uber_drivers_app\android\app\build.gradle:
+
+    android {
+        ndkVersion = "25.1.8937393"
+        ...
+    }
+
+../../../../AppData/Local/Pub/Cache/hosted/pub.dev/image_cropper_platform_interface-7.2.0/lib/src/models/settings.dart:244:59: Error: The method 'toARGB32' isn't defined for the class 'Color'.
+ - 'Color' is from 'dart:ui'.
+Try correcting the name to the name of an existing method, or defining a method named 'toARGB32'.
+        'android.toolbar_color': int32(this.toolbarColor?.toARGB32()),
+                                                          ^^^^^^^^
+../../../../AppData/Local/Pub/Cache/hosted/pub.dev/image_cropper_platform_interface-7.2.0/lib/src/models/settings.dart:247:72: Error: The method 'toARGB32' isn't defined for the class 'Color'.
+ - 'Color' is from 'dart:ui'.
+Try correcting the name to the name of an existing method, or defining a method named 'toARGB32'.
+        'android.toolbar_widget_color': int32(this.toolbarWidgetColor?.toARGB32()),
+                                                                       ^^^^^^^^
+../../../../AppData/Local/Pub/Cache/hosted/pub.dev/image_cropper_platform_interface-7.2.0/lib/src/models/settings.dart:248:65: Error: The method 'toARGB32' isn't defined for the class 'Color'.
+ - 'Color' is from 'dart:ui'.
+Try correcting the name to the name of an existing method, or defining a method named 'toARGB32'.
+        'android.background_color': int32(this.backgroundColor?.toARGB32()),
+                                                                ^^^^^^^^
+../../../../AppData/Local/Pub/Cache/hosted/pub.dev/image_cropper_platform_interface-7.2.0/lib/src/models/settings.dart:250:51: Error: The method 'toARGB32' isn't defined for the class 'Color'.
+ - 'Color' is from 'dart:ui'.
+Try correcting the name to the name of an existing method, or defining a method named 'toARGB32'.
+            int32(this.activeControlsWidgetColor?.toARGB32()),
+                                                  ^^^^^^^^
+../../../../AppData/Local/Pub/Cache/hosted/pub.dev/image_cropper_platform_interface-7.2.0/lib/src/models/settings.dart:251:68: Error: The method 'toARGB32' isn't defined for the class 'Color'.
+ - 'Color' is from 'dart:ui'.
+Try correcting the name to the name of an existing method, or defining a method named 'toARGB32'.
+        'android.dimmed_layer_color': int32(this.dimmedLayerColor?.toARGB32()),
+                                                                   ^^^^^^^^
+../../../../AppData/Local/Pub/Cache/hosted/pub.dev/image_cropper_platform_interface-7.2.0/lib/src/models/settings.dart:252:64: Error: The method 'toARGB32' isn't defined for the class 'Color'.
+ - 'Color' is from 'dart:ui'.
+Try correcting the name to the name of an existing method, or defining a method named 'toARGB32'.
+        'android.crop_frame_color': int32(this.cropFrameColor?.toARGB32()),
+                                                               ^^^^^^^^
+../../../../AppData/Local/Pub/Cache/hosted/pub.dev/image_cropper_platform_interface-7.2.0/lib/src/models/settings.dart:253:62: Error: The method 'toARGB32' isn't defined for the class 'Color'.
+ - 'Color' is from 'dart:ui'.
+Try correcting the name to the name of an existing method, or defining a method named 'toARGB32'.
+        'android.crop_grid_color': int32(this.cropGridColor?.toARGB32()),
+                                                             ^^^^^^^^
+lib/pages/newTrip/new_trip_page.dart:35:49: Error: Required named parameter 'apiKey' must be provided.
+  PolylinePoints polylinePoints = PolylinePoints();
+                                                ^
+../../../../AppData/Local/Pub/Cache/hosted/pub.dev/flutter_polyline_points-3.1.0/lib/src/polyline_points.dart:27:3: Context: Found this candidate, but the arguments don't match.
+  PolylinePoints({
+  ^^^^^^^^^^^^^^
+lib/pages/newTrip/new_trip_page.dart:83:53: Error: Required named parameter 'apiKey' must be provided.
+      PolylinePoints pointsPolyline = PolylinePoints();
+                                                    ^
+../../../../AppData/Local/Pub/Cache/hosted/pub.dev/flutter_polyline_points-3.1.0/lib/src/polyline_points.dart:27:3: Context: Found this candidate, but the arguments don't match.
+  PolylinePoints({
+  ^^^^^^^^^^^^^^
+lib/pages/newTrip/new_trip_page.dart:85:26: Error: The method 'decodePolyline' isn't defined for the class 'PolylinePoints'.
+ - 'PolylinePoints' is from 'package:flutter_polyline_points/src/polyline_points.dart' ('../../../../AppData/Local/Pub/Cache/hosted/pub.dev/flutter_polyline_points-3.1.0/lib/src/polyline_points.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'decodePolyline'.
+          pointsPolyline.decodePolyline(tripDetailsInfo.encodedPoints!);
+                         ^^^^^^^^^^^^^^
+Target kernel_snapshot_program failed: Exception
+
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileFlutterBuildRelease'.
+> Process 'command 'C:\Users\Lenovo\flutter\bin\flutter.bat'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 27s
+Running Gradle task 'assembleRelease'...                           28.5s
+Gradle task assembleRelease failed with exit code 1

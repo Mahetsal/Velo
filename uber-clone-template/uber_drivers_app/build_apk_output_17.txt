@@ -1,0 +1,24 @@
+
+Running Gradle task 'assembleRelease'...                        
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file 'C:\Users\Lenovo\Desktop\Velo\uber-clone-template\uber_drivers_app\android\build.gradle' line: 23
+
+* What went wrong:
+A problem occurred evaluating root project 'android'.
+> It is too late to set compileSdk
+  It has already been read to configure this project.
+  Consider either moving this call to be during evaluation,
+  or using the variant API.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 6s
+Running Gradle task 'assembleRelease'...                            7.3s
+Gradle task assembleRelease failed with exit code 1

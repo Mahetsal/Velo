@@ -1,0 +1,10 @@
+{
+  "commands": [
+    "echo '# Local fallback for Prisma generation' > /home/ubuntu/uber/apps/server/.env",
+    "echo 'DATABASE_URL=\"postgresql://postgres:PostgresPassword123!@velo-db-instance2.c0hs2k00ihu5.us-east-1.rds.amazonaws.com:5432/postgres?sslmode=require\"' >> /home/ubuntu/uber/apps/server/.env",
+    "echo 'REDIS_URL=\"redis://localhost:6379\"' >> /home/ubuntu/uber/apps/server/.env",
+    "echo 'JWT_SECRET=\"your-super-secret-jwt-key\"' >> /home/ubuntu/uber/apps/server/.env",
+    "echo --- RUNNING MIGRATIONS ---",
+    "cd /home/ubuntu/uber/apps/server && npx prisma migrate deploy || npx prisma db push"
+  ]
+}

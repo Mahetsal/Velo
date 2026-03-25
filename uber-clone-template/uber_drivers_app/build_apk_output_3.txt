@@ -1,0 +1,63 @@
+﻿
+Running Gradle task 'assembleRelease'...                        
+C:\Users\Lenovo\flutter
+\bin\flutter.bat : 
+At line:1 char:1
++ C:\Users\Lenovo\flutt
+er\bin\flutter.bat 
+build apk *>&1 | 
+Out-File -En ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (:String) [],    
+ RemoteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+FAILURE: Build failed 
+with an exception.
+
+* What went wrong:
+Execution failed for 
+task ':assets_audio_pla
+yer_web:compileReleaseK
+otlin'.
+> Inconsistent 
+JVM-target 
+compatibility detected 
+for tasks 'compileRelea
+seJavaWithJavac' (1.8) 
+and 
+'compileReleaseKotlin' 
+(21).
+
+  Consider using JVM 
+Toolchain: https://kotl
+.in/gradle/jvm/toolchai
+n
+  Learn more about 
+JVM-target validation: 
+https://kotl.in/gradle/
+jvm/target-validation 
+
+* Try:
+> Run with 
+--stacktrace option to 
+get the stack trace.
+> Run with --info or 
+--debug option to get 
+more log output.
+> Run with --scan to 
+get full insights.
+> Get more help at http
+s://help.gradle.org.
+
+BUILD FAILED in 21s
+Running Gradle task 'assembleRelease'...                           22.4s
+Gradle task 
+assembleRelease failed 
+with exit code 1
