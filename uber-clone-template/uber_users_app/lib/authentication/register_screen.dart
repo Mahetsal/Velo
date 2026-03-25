@@ -5,7 +5,7 @@ import 'package:uber_users_app/appInfo/auth_provider.dart';
 import 'package:uber_users_app/authentication/user_information_screen.dart';
 import 'package:uber_users_app/methods/common_methods.dart';
 import 'package:uber_users_app/pages/blocked_screen.dart';
-import 'package:uber_users_app/pages/home_page.dart';
+import 'package:uber_users_app/pages/user_root_page.dart';
 import 'package:uber_users_app/pages/privacy_policy_page.dart';
 import 'package:uber_users_app/pages/terms_page.dart';
 import 'package:uber_users_app/theme/app_theme.dart';
@@ -587,7 +587,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (isSingedIn) {
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const UserRootPage()),
           (route) => false);
     } else {
       Navigator.push(

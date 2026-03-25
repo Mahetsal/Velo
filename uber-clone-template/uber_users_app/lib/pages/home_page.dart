@@ -1334,19 +1334,17 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    String? userAddress = Provider.of<AppInfoClass>(context, listen: false)
-                .pickUpLocation !=
-            null
-        ? (Provider.of<AppInfoClass>(context, listen: false)
-                    .pickUpLocation!
-                    .placeName!
-                    .length >
-                35
-            ? "${Provider.of<AppInfoClass>(context, listen: false).pickUpLocation!.placeName!.substring(0, 35)}..."
-            : Provider.of<AppInfoClass>(context, listen: false)
-                .pickUpLocation!
-                .placeName)
-        : 'Fetching Your Current Location.';
+    final rawPlaceName = Provider.of<AppInfoClass>(context, listen: false)
+        .pickUpLocation
+        ?.placeName;
+    final String userAddress;
+    if (rawPlaceName != null && rawPlaceName.isNotEmpty) {
+      userAddress = rawPlaceName.length > 35
+          ? "${rawPlaceName.substring(0, 35)}..."
+          : rawPlaceName;
+    } else {
+      userAddress = context.l10n.fetchingLocation;
+    }
 
     // Never call setState from build. Derived values are recalculated when inputs change.
 
@@ -1903,7 +1901,7 @@ class _HomePageState extends State<HomePage> {
                                               ),
                                               const SizedBox(height: 2),
                                               Text(
-                                                userAddress ?? "",
+                                                userAddress,
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: Theme.of(context)

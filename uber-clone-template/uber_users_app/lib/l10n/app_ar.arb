@@ -381,5 +381,6 @@
 
   "changePasswordSubtitle": "تغيير كلمة المرور لتسجيل الدخول.",
   "aboutVersionLine": "الإصدار {version} ({build})",
-  "@aboutVersionLine": { "placeholders": { "version": { "type": "String" }, "build": { "type": "String" } } }
+  "@aboutVersionLine": { "placeholders": { "version": { "type": "String" }, "build": { "type": "String" } } },
+  "fetchingLocation": "جارٍ تحديد موقعك…"
 }

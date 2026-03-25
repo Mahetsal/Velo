@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html dir="ltr" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&amp;family=Inter:wght@300;400;500;600;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary": "#006855",
+                        "on-background": "#191c1e",
+                        "on-primary-fixed-variant": "#920028",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "surface": "#f7f9fb",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#00836c",
+                        "outline-variant": "#e5bdbe",
+                        "inverse-surface": "#2d3133",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#e11d48",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#dae2fd",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-primary-fixed": "#40000c",
+                        "surface-bright": "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container": "#eceef0",
+                        "secondary": "#565e74",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-tint": "#be0037",
+                        "primary": "#b80035",
+                        "on-primary-container": "#fffaf9",
+                        "on-secondary-fixed": "#131b2e",
+                        "primary-fixed-dim": "#ffb3b6",
+                        "outline": "#906f70",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d8dadc",
+                        "secondary-fixed": "#dae2fd",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-surface": "#191c1e",
+                        "background": "#f7f9fb",
+                        "on-tertiary-fixed": "#002019",
+                        "on-secondary-container": "#5c647a",
+                        "inverse-primary": "#ffb3b6",
+                        "on-surface-variant": "#5c3f40",
+                        "primary-fixed": "#ffdada",
+                        "tertiary-fixed": "#90f5d9",
+                        "on-tertiary-fixed-variant": "#005142",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed-dim": "#74d8bd",
+                        "on-tertiary-container": "#eefff7"
+                    },
+                    fontFamily: {
+                        "headline": ["Outfit", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"],
+                        "arabic": ["IBM Plex Sans Arabic", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 0.4; }
+            100% { transform: scale(3.5); opacity: 0; }
+        }
+        
+        .ripple-circle {
+            animation: ripple 3s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+        }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 2s linear infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body overflow-hidden h-screen w-full relative">
+<!-- Top App Bar (Shared Component Anchor) -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-none flex items-center justify-between px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors scale-95 active:opacity-80 transition-all">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">menu</span>
+</button>
+<h1 class="font-['Outfit'] font-black text-rose-600 dark:text-rose-500 italic text-2xl tracking-tight">Velo</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border-2 border-white shadow-sm">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Close-up portrait of a stylish man in Amman, Jordan, neutral background, soft natural lighting, editorial style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB28TbNlOP4zlZSQ9JpACkc4KdP6Eoi0I0wvvn9YuEGbmmcCQZxxfxVmUJS1ueZo5vLMzbz85B_CxLrVBuxDrh63zsPceKSUL4ZYtzLjEFmEHithL4anu10gue2CoErr7pFuL2Zak5Gu2ngWhesSKnFpfpKTiBAPQqbT2xC_ZNJfz2Nl5Wj41Eo6uKGQhCQ7CGOfqjqNIACnT4xcuuOs1kEF8DWJ3C7P42ITKjIXbxtte-zrkw24B2RNkzb-rSFl4FegtAuj9Cajk8"/>
+</div>
+</header>
+<!-- Map Background Section -->
+<main class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-surface-dim">
+<img alt="Amman Map" class="w-full h-full object-cover opacity-60 grayscale-[40%]" data-alt="Stylized top-down satellite map of urban Amman city streets, muted architectural tones, high contrast, minimalist cartography" data-location="Amman, Jordan" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQF2fbxq2Bn0Lig2-sEle81k-DnTkvTpfozwmeax4wZ4Lc2S-RAF6MNewZxFOkpI2TwIO9alZciFj9crmhfIMOB4TM0-QyDAFiru0ApPXggq28R5FTeS-wvpP_41TPwEeon-Oxn7bwX9-8LpC5212lK_l12yha5HPDQRFW1Cs-wmd3rjRSDPm5egDZFvO6i_Sr7ceC7rI2Y7aP37fQH1tCNK_yTJpFJJRGLrgSn87vq_z0RUuEZH8lHQ89yaobjqItMZNAvcTiiao"/>
+</div>
+<!-- Pulsating Ripple Effect -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+<!-- Ripple Rings -->
+<div class="ripple-circle absolute w-24 h-24 rounded-full border-4 border-primary/30"></div>
+<div class="ripple-circle absolute w-24 h-24 rounded-full border-4 border-primary/20" style="animation-delay: 1s;"></div>
+<div class="ripple-circle absolute w-24 h-24 rounded-full border-4 border-primary/10" style="animation-delay: 2s;"></div>
+<!-- Pickup Marker -->
+<div class="relative z-10 w-8 h-8 bg-primary rounded-full border-4 border-white shadow-xl flex items-center justify-center">
+<div class="w-2 h-2 bg-white rounded-full"></div>
+</div>
+<!-- Location Label -->
+<div class="absolute top-12 whitespace-nowrap bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-outline-variant/20">
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface/60">Pickup at</span>
+<p class="text-sm font-bold text-on-surface">Abdali Boulevard</p>
+</div>
+</div>
+</main>
+<!-- Bottom Sheet Container -->
+<section class="fixed bottom-0 left-0 w-full z-40 px-4 pb-8 md:px-0">
+<div class="max-w-xl mx-auto bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl rounded-t-[3.5rem] shadow-[0px_-20px_60px_rgba(15,23,42,0.12)] overflow-hidden">
+<!-- Drag Handle -->
+<div class="w-full flex justify-center py-4">
+<div class="w-12 h-1.5 bg-surface-container-highest rounded-full"></div>
+</div>
+<!-- Content Area -->
+<div class="px-8 pt-2 pb-8 flex flex-col items-center text-center">
+<!-- Status Spinner & ETA -->
+<div class="relative mb-8 flex items-center justify-center">
+<svg class="w-32 h-32 animate-spin-slow" viewbox="0 0 100 100">
+<circle class="text-surface-container-high" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-width="2"></circle>
+<circle class="text-primary" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-dasharray="70 200" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="text-2xl font-black font-headline text-primary tracking-tighter">4</span>
+<span class="text-[10px] uppercase font-bold tracking-widest text-on-surface/40">Min</span>
+</div>
+</div>
+<h2 class="text-2xl font-['Outfit'] font-extrabold text-on-surface mb-2">Finding your driver...</h2>
+<p class="text-on-surface-variant font-medium max-w-xs mb-10 leading-relaxed">
+                    Connecting you with the nearest Velo Premium pilot in Abdali.
+                </p>
+<!-- Vehicle Info Chip -->
+<div class="w-full flex items-center justify-between bg-surface-container-low rounded-2xl p-4 mb-8">
+<div class="flex items-center gap-4 text-left">
+<div class="bg-white p-3 rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="local_taxi">local_taxi</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Velo Comfort</p>
+<p class="text-xs text-on-surface-variant">Premium Sedan • AC</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-lg font-black font-headline text-primary">JOD 4.50</span>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full h-16 bg-surface-container-highest text-on-surface font-bold rounded-full transition-all active:scale-[0.98] hover:bg-surface-container-high flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-xl">close</span>
+<span>Cancel Request</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Navigation Drawer (Predicted Shared Component Hidden State) -->
+<aside class="fixed inset-y-0 left-0 w-80 bg-slate-50 dark:bg-slate-900 shadow-2xl z-[60] -translate-x-full transition-transform duration-500 flex flex-col p-8 rounded-r-[3rem]">
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-16 h-16 rounded-full bg-rose-100 overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="Close-up portrait of a stylish man in Amman, Jordan, neutral background, soft natural lighting, editorial style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMJkiKve0p32yi5CdHwsmWI6hpMvoUWPSVIt_Q-Ir6k6Jllj6ct6dyIXSut2RdxWnGOV24Jq2U59R3lZ0G0o3fdtdCh1yQiHU2LqJdyGdNHLXYuxZoQft62ByTO5Qm2wd_cXooWR2-VnnUX6FlbFFTAvQcs8aWUta0c083x9LYFA52cv_j8rxPauZCjpkQmyntnP9oswJxgygPQrxOlnNsPaI8CoCTW1i9X1m3DVeXoJqDudNcb0Opa5CrswNUEt0MJ5coiXaWxeE"/>
+</div>
+<div class="text-left">
+<h3 class="font-['Outfit'] font-bold text-lg text-on-surface leading-tight">Premium Rider</h3>
+<p class="text-sm text-slate-500">Amman, Jordan</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-4 px-6 py-4 text-slate-600 dark:text-slate-400 font-['IBM_Plex_Sans_Arabic'] font-medium hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span>Profile</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-600 dark:text-slate-400 font-['IBM_Plex_Sans_Arabic'] font-medium hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Payment</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 rounded-xl font-['IBM_Plex_Sans_Arabic'] font-medium" href="#">
+<span class="material-symbols-outlined">directions_car</span>
+<span>My Trips</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-600 dark:text-slate-400 font-['IBM_Plex_Sans_Arabic'] font-medium hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-4 text-slate-600 dark:text-slate-400 font-['IBM_Plex_Sans_Arabic'] font-medium hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+</aside>
+</body></html>

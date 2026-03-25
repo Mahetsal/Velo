@@ -5,7 +5,7 @@ import 'package:uber_users_app/appInfo/auth_provider.dart';
 import 'package:uber_users_app/authentication/user_information_screen.dart';
 import 'package:uber_users_app/methods/common_methods.dart';
 import 'package:uber_users_app/pages/blocked_screen.dart';
-import 'package:uber_users_app/pages/home_page.dart';
+import 'package:uber_users_app/pages/user_root_page.dart';
 import 'package:uber_users_app/theme/app_theme.dart';
 
 class OTPScreen extends StatefulWidget {
@@ -182,7 +182,15 @@ class _OTPScreenState extends State<OTPScreen> {
             const SizedBox(height: 6),
             Center(
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "SMS resend is not available in this build.",
+                      ),
+                    ),
+                  );
+                },
                 child: const Text(
                   "Resend Code (00:59)",
                   style: TextStyle(
@@ -232,7 +240,7 @@ class _OTPScreenState extends State<OTPScreen> {
               // Navigate to dashboard if profile is complete
               if (!mounted) return;
               navigator.pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const HomePage()),
+                MaterialPageRoute(builder: (_) => const UserRootPage()),
                 (route) => false,
               );
             } else {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uber_users_app/appInfo/auth_provider.dart';
 import 'package:uber_users_app/methods/common_methods.dart';
-import 'package:uber_users_app/pages/home_page.dart';
+import 'package:uber_users_app/pages/user_root_page.dart';
 import 'package:uber_users_app/pages/terms_page.dart';
 import 'package:uber_users_app/theme/app_theme.dart';
 import 'package:uber_users_app/l10n/l10n_ext.dart';
@@ -312,7 +312,7 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
   void navigateToHomeScreen() {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const UserRootPage()),
         (route) => false);
   }
 }

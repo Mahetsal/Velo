@@ -16,11 +16,9 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  static const String _notificationsKey = "notifications_enabled";
   static const String _defaultPaymentKey = "default_payment_method";
 
   bool _loading = true;
-  bool _notificationsEnabled = true;
   String _defaultPaymentMethod = "Cash";
   ThemeMode _themeMode = ThemeMode.system;
 
@@ -35,7 +33,6 @@ class _SettingsPageState extends State<SettingsPage> {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     setState(() {
-      _notificationsEnabled = prefs.getBool(_notificationsKey) ?? true;
       final method = prefs.getString(_defaultPaymentKey) ?? "Cash";
       _defaultPaymentMethod = (method == "Wallet") ? "Wallet" : "Cash";
       _themeMode = appInfo.themeMode;
@@ -45,7 +42,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> _save() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_notificationsKey, _notificationsEnabled);
     await prefs.setString(_defaultPaymentKey, _defaultPaymentMethod);
   }
 
@@ -126,20 +122,6 @@ class _SettingsPageState extends State<SettingsPage> {
                         await appInfo.setThemeMode(value);
                       },
                     ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                _SettingsCard(
-                  icon: Icons.notifications_rounded,
-                  title: context.l10n.notifications,
-                  subtitle: context.l10n.notificationsSubtitle,
-                  child: Switch(
-                    value: _notificationsEnabled,
-                    activeColor: AppTheme.accent,
-                    onChanged: (value) async {
-                      setState(() => _notificationsEnabled = value);
-                      await _save();
-                    },
                   ),
                 ),
                 const SizedBox(height: 12),

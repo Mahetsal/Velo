@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Velo | Ride Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&amp;family=Inter:wght@400;500;600&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#006855",
+              "on-background": "#191c1e",
+              "on-primary-fixed-variant": "#920028",
+              "on-error": "#ffffff",
+              "surface-variant": "#e0e3e5",
+              "surface": "#f7f9fb",
+              "secondary-fixed-dim": "#bec6e0",
+              "on-primary": "#ffffff",
+              "tertiary-container": "#00836c",
+              "outline-variant": "#e5bdbe",
+              "inverse-surface": "#2d3133",
+              "on-error-container": "#93000a",
+              "on-secondary": "#ffffff",
+              "primary-container": "#e11d48",
+              "surface-container-lowest": "#ffffff",
+              "secondary-container": "#dae2fd",
+              "on-secondary-fixed-variant": "#3f465c",
+              "on-primary-fixed": "#40000c",
+              "surface-bright": "#f7f9fb",
+              "surface-container-low": "#f2f4f6",
+              "surface-container": "#eceef0",
+              "secondary": "#565e74",
+              "surface-container-high": "#e6e8ea",
+              "surface-tint": "#be0037",
+              "primary": "#b80035",
+              "on-primary-container": "#fffaf9",
+              "on-secondary-fixed": "#131b2e",
+              "primary-fixed-dim": "#ffb3b6",
+              "outline": "#906f70",
+              "on-tertiary": "#ffffff",
+              "error-container": "#ffdad6",
+              "surface-dim": "#d8dadc",
+              "secondary-fixed": "#dae2fd",
+              "error": "#ba1a1a",
+              "surface-container-highest": "#e0e3e5",
+              "on-surface": "#191c1e",
+              "background": "#f7f9fb",
+              "on-tertiary-fixed": "#002019",
+              "on-secondary-container": "#5c647a",
+              "inverse-primary": "#ffb3b6",
+              "on-surface-variant": "#5c3f40",
+              "primary-fixed": "#ffdada",
+              "tertiary-fixed": "#90f5d9",
+              "on-tertiary-fixed-variant": "#005142",
+              "inverse-on-surface": "#eff1f3",
+              "tertiary-fixed-dim": "#74d8bd",
+              "on-tertiary-container": "#eefff7"
+            },
+            fontFamily: {
+              "headline": ["Outfit"],
+              "body": ["Inter"],
+              "label": ["Inter"],
+              "arabic": ["IBM Plex Sans Arabic"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .map-gradient-overlay {
+            background: linear-gradient(to bottom, rgba(247, 249, 251, 0.9) 0%, rgba(247, 249, 251, 0) 20%, rgba(247, 249, 251, 0) 80%, rgba(247, 249, 251, 0.9) 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed overflow-hidden">
+<!-- Header Navigation (Suppressing Shell based on Task Focus) -->
+<nav class="fixed top-0 w-full z-50 flex items-center justify-between px-6 py-6 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md">
+<div class="flex items-center gap-4">
+<button class="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-sm text-on-surface transition-all active:scale-95">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary">Your Route</span>
+<h1 class="font-headline font-bold text-lg tracking-tight text-on-surface">Trip Details</h1>
+</div>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="professional portrait of a young man with a friendly expression in clean studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvQ1SyIRSKCgePNxcGUebQJLqQ52pUKxkNgKAYhkKDxNRUJOVkWmWH40Ntpgg4wgh_FHLTzXWt_NJs8ZHUnY9OKMYy2kH4Fp6eD9e7Puj5fREai-I1V0uGKRJ1-M1_peIhyGON2N1QSpTvoAVEWVNMYsIDA99ka384azW8x5fcva0B6zkzWhPa-tjq3o1CdlXRefivIsChQxrBLHBuTkMy6ZFcaYCefvU2Q8FGhnMJ-M8QA7WBK0FbT5Ih5Ip4h5yZoLw8NyNaolQ"/>
+</div>
+</nav>
+<!-- Main Content Canvas (Map Layer) -->
+<main class="relative h-screen w-full">
+<!-- Map Background -->
+<div class="absolute inset-0 bg-surface-dim">
+<img alt="Map" class="w-full h-full object-cover grayscale opacity-40 mix-blend-multiply" data-alt="detailed overhead satellite map view of an urban city with complex road networks and buildings in soft grey tones" data-location="Amman, Jordan" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbg8ju9h6EbKwz4ntGcRor-F8bXMixn2tc2tN3jwC06VXbgweE67MZWTMGSL_nIxXmQQ0rpv3eKQVjK4fM9xkwckXrMsCIOTbEn4_ux_Gpjsz0R_2QrTSvEbHK8czwYzKTvDyWwPnxDOYyxfjmu5mHSSYSoZwLOvOWCjmyq-IS9jfsPSGPH_ym3aBycOup75EN4YcAVmkpEDtcx1C-p9nOOGNxhutWayWoqSTmZ1M6jdgtTSrfbeDmtSRWfvRF18Smo662HDOM0Ic"/>
+<div class="absolute inset-0 map-gradient-overlay pointer-events-none"></div>
+<!-- Route Visual Simulation -->
+<svg class="absolute inset-0 w-full h-full" fill="none" viewbox="0 0 400 800" xmlns="http://www.w3.org/2000/svg">
+<path class="opacity-80" d="M200 150C250 250 150 350 300 500S100 650 200 750" stroke="#E11D48" stroke-dasharray="1 12" stroke-linecap="round" stroke-width="6"></path>
+<!-- Start Point -->
+<circle cx="200" cy="150" fill="#E11D48" r="8"></circle>
+<circle cx="200" cy="150" r="14" stroke="#E11D48" stroke-opacity="0.2" stroke-width="8"></circle>
+<!-- End Point -->
+<circle cx="200" cy="750" fill="#1e293b" r="8"></circle>
+<circle cx="200" cy="750" r="14" stroke="#1e293b" stroke-opacity="0.2" stroke-width="8"></circle>
+</svg>
+<!-- Driver Markers -->
+<div class="absolute top-[40%] left-[60%]">
+<div class="bg-white p-2 rounded-full shadow-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">local_taxi</span>
+</div>
+</div>
+<div class="absolute top-[55%] left-[30%]">
+<div class="bg-white p-2 rounded-full shadow-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">local_taxi</span>
+</div>
+</div>
+</div>
+<!-- Location Floating Cards -->
+<div class="absolute top-28 left-6 right-6 flex flex-col gap-3">
+<div class="bg-white/90 backdrop-blur-xl p-5 rounded-lg shadow-sm border border-outline-variant/10 flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-primary ring-4 ring-primary-fixed"></div>
+<div class="flex-1">
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-tighter">Pickup</p>
+<p class="font-headline font-bold text-on-surface">Abdali Boulevard</p>
+</div>
+</div>
+<div class="bg-white/90 backdrop-blur-xl p-5 rounded-lg shadow-sm border border-outline-variant/10 flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-slate-800 ring-4 ring-slate-200"></div>
+<div class="flex-1">
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-tighter">Destination</p>
+<p class="font-headline font-bold text-on-surface">Queen Alia Airport</p>
+</div>
+</div>
+</div>
+<!-- Floating Bottom Sheet -->
+<section class="absolute bottom-0 w-full bg-white rounded-t-xl shadow-[0px_-20px_60px_rgba(15,23,42,0.12)] p-6 md:max-w-md md:left-1/2 md:-translate-x-1/2">
+<!-- Handle -->
+<div class="w-12 h-1.5 bg-surface-container rounded-full mx-auto mb-8"></div>
+<header class="mb-8">
+<h2 class="font-headline font-black text-2xl tracking-tight text-on-surface">Select Vehicle</h2>
+<p class="text-slate-500 text-sm">Prices include airport access fees</p>
+</header>
+<!-- Tier Selection Bento -->
+<div class="space-y-4 mb-8">
+<!-- Velo Economy -->
+<button class="w-full flex items-center gap-5 p-5 bg-secondary-container/30 rounded-lg border-2 border-primary group transition-all">
+<div class="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-3xl text-primary">local_taxi</span>
+</div>
+<div class="flex-1 text-left">
+<h3 class="font-bold text-lg">Velo Economy</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-sm text-slate-400">schedule</span>
+<p class="text-xs text-slate-500 font-medium">4 min away</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline font-black text-xl text-primary">12 JOD</p>
+</div>
+</button>
+<!-- Velo Comfort -->
+<button class="w-full flex items-center gap-5 p-5 bg-surface rounded-lg hover:bg-secondary-container/20 border-2 border-transparent transition-all">
+<div class="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-3xl text-slate-400">minor_crash</span>
+</div>
+<div class="flex-1 text-left">
+<h3 class="font-bold text-lg">Velo Comfort</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-sm text-slate-400">schedule</span>
+<p class="text-xs text-slate-500 font-medium">2 min away</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline font-black text-xl text-on-surface">18 JOD</p>
+</div>
+</button>
+<!-- Velo XL -->
+<button class="w-full flex items-center gap-5 p-5 bg-surface rounded-lg hover:bg-secondary-container/20 border-2 border-transparent transition-all">
+<div class="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-3xl text-slate-400">departure_board</span>
+</div>
+<div class="flex-1 text-left">
+<h3 class="font-bold text-lg">Velo XL</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-sm text-slate-400">schedule</span>
+<p class="text-xs text-slate-500 font-medium">6 min away</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline font-black text-xl text-on-surface">25 JOD</p>
+</div>
+</button>
+</div>
+<!-- Payment and CTA -->
+<div class="flex flex-col gap-6">
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-surface-container-low rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-600">account_balance_wallet</span>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Payment Method</p>
+<p class="text-sm font-semibold text-on-surface">Velo Wallet (24.50 JOD)</p>
+</div>
+</div>
+<button class="text-primary font-bold text-sm hover:underline">Change</button>
+</div>
+<button class="w-full h-16 bg-gradient-to-br from-primary to-primary-container text-white rounded-full font-headline font-bold text-lg flex items-center justify-center gap-3 shadow-[0px_20px_40px_rgba(184,0,53,0.25)] transition-all active:scale-95">
+                    Confirm Booking
+                    <span class="material-symbols-outlined">trending_flat</span>
+</button>
+</div>
+<!-- Bottom Spacer for Home Indicator -->
+<div class="h-6"></div>
+</section>
+</main>
+<!-- Support/Contextual FAB -->
+<div class="fixed right-6 bottom-[480px] md:bottom-auto md:top-1/2 md:-translate-y-1/2 z-40 flex flex-col gap-3">
+<button class="w-14 h-14 bg-white/90 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center text-slate-600 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+<button class="w-14 h-14 bg-white/90 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center text-slate-600 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">support_agent</span>
+</button>
+</div>
+</body></html>

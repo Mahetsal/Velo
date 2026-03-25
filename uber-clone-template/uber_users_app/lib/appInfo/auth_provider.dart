@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uber_users_app/api/api_client.dart';
 import 'package:uber_users_app/authentication/register_screen.dart';
@@ -63,17 +62,6 @@ class AuthenticationProvider extends ChangeNotifier {
     return null;
   }
 
-  Map<String, String> buildAuthHeaders({bool includeJsonContentType = false}) {
-    final headers = <String, String>{};
-    final token = _authToken;
-    headers["Authorization"] =
-        "Bearer ${(token != null && token.isNotEmpty) ? token : "public-migration-token"}";
-    if (includeJsonContentType) {
-      headers["Content-Type"] = "application/json";
-    }
-    return headers;
-  }
-
   Future<bool> loginWithPhone({
     required BuildContext context,
     required String phoneNumber,
@@ -82,10 +70,9 @@ class AuthenticationProvider extends ChangeNotifier {
     startLoading();
     try {
       final normalizedPhone = normalizeJordanPhone(phoneNumber);
-      final response = await http.post(
-        Uri.parse("${ApiClient.baseUrl}/users/login"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"phone": normalizedPhone, "password": password}),
+      final response = await ApiClient.post(
+        "/users/login",
+        body: {"phone": normalizedPhone, "password": password},
       );
       if (response.statusCode != 200) {
         if (!context.mounted) return false;
@@ -145,12 +132,12 @@ class AuthenticationProvider extends ChangeNotifier {
     startLoading();
     try {
       final normalizedPhone = normalizeJordanPhone(phoneNumber);
-      final response = await http.post(
-        Uri.parse("${ApiClient.baseUrl}/users/reset-password"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(
-          {"phone": normalizedPhone, "newPassword": newPassword.trim()},
-        ),
+      final response = await ApiClient.post(
+        "/users/reset-password",
+        body: {
+          "phone": normalizedPhone,
+          "newPassword": newPassword.trim(),
+        },
       );
       if (response.statusCode == 200) {
         if (!context.mounted) return true;
@@ -210,10 +197,8 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final normalizedPhone = normalizeJordanPhone(phoneNumber);
       _phoneNumber = normalizedPhone;
-      final existing = await http.get(
-        Uri.parse(
-          "${ApiClient.baseUrl}/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
-        ),
+      final existing = await ApiClient.get(
+        "/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
       );
       if (existing.statusCode == 200) {
         final data = jsonDecode(existing.body) as Map<String, dynamic>;
@@ -245,10 +230,8 @@ class AuthenticationProvider extends ChangeNotifier {
     final normalized = normalizeJordanPhone(phoneNumber);
     final u = await checkUserExistByPhone(normalized);
     if (u) return false;
-    final r = await http.get(
-      Uri.parse(
-        "${ApiClient.baseUrl}/drivers/by-phone/${Uri.encodeComponent(normalized)}",
-      ),
+    final r = await ApiClient.get(
+      "/drivers/by-phone/${Uri.encodeComponent(normalized)}",
     );
     if (r.statusCode != 200) return true;
     final data = jsonDecode(r.body) as Map<String, dynamic>;
@@ -283,10 +266,8 @@ class AuthenticationProvider extends ChangeNotifier {
         throw Exception("Phone number is required.");
       }
       final normalizedPhone = normalizeJordanPhone(phone);
-      final existingByPhone = await http.get(
-        Uri.parse(
-          "${ApiClient.baseUrl}/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
-        ),
+      final existingByPhone = await ApiClient.get(
+        "/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
       );
       bool shouldCreate = true;
       if (existingByPhone.statusCode == 200) {
@@ -302,22 +283,21 @@ class AuthenticationProvider extends ChangeNotifier {
         }
       }
 
+      const migrationHeaders = <String, String>{
+        "Content-Type": "application/json",
+        "Authorization": "Bearer public-migration-token",
+      };
+      final userPayload = {...userModel.toMap(), "password": password};
       final response = shouldCreate
-          ? await http.post(
-              Uri.parse("${ApiClient.baseUrl}/users"),
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer public-migration-token"
-              },
-              body: jsonEncode({...userModel.toMap(), "password": password}),
+          ? await ApiClient.post(
+              "/users",
+              body: userPayload,
+              headers: migrationHeaders,
             )
-          : await http.put(
-              Uri.parse("${ApiClient.baseUrl}/users/${userModel.id}"),
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer public-migration-token"
-              },
-              body: jsonEncode({...userModel.toMap(), "password": password}),
+          : await ApiClient.put(
+              "/users/${userModel.id}",
+              body: userPayload,
+              headers: migrationHeaders,
             );
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw Exception("AWS save failed with status ${response.statusCode}");
@@ -342,8 +322,8 @@ class AuthenticationProvider extends ChangeNotifier {
 
   // Method to check if user exists in Firebase Realtime Database
   Future<bool> checkUserExistByEmail(String email) async {
-    final response = await http.get(
-      Uri.parse("${ApiClient.baseUrl}/users/by-email/${Uri.encodeComponent(email)}"),
+    final response = await ApiClient.get(
+      "/users/by-email/${Uri.encodeComponent(email)}",
     );
     if (response.statusCode != 200) return false;
     final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -353,10 +333,8 @@ class AuthenticationProvider extends ChangeNotifier {
   // Method to check if user exists in Firebase Realtime Database by phone number
   Future<bool> checkUserExistByPhone(String phoneNumber) async {
     final normalizedPhone = normalizeJordanPhone(phoneNumber);
-    final response = await http.get(
-      Uri.parse(
-        "${ApiClient.baseUrl}/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
-      ),
+    final response = await ApiClient.get(
+      "/users/by-phone/${Uri.encodeComponent(normalizedPhone)}",
     );
     if (response.statusCode != 200) return false;
     final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -366,7 +344,7 @@ class AuthenticationProvider extends ChangeNotifier {
   Future<bool> checkUserExistById() async {
     final currentUid = _uid;
     if (currentUid == null) return false;
-    final response = await http.get(Uri.parse("${ApiClient.baseUrl}/users/$currentUid"));
+    final response = await ApiClient.get("/users/$currentUid");
     if (response.statusCode != 200) return false;
     final data = jsonDecode(response.body) as Map<String, dynamic>;
     return (data["exists"] ?? false) == true;
@@ -377,7 +355,7 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final resolvedUid = _uid;
       if (resolvedUid == null) return;
-      final response = await http.get(Uri.parse("${ApiClient.baseUrl}/users/$resolvedUid"));
+      final response = await ApiClient.get("/users/$resolvedUid");
       if (response.statusCode == 200) {
         final payload = jsonDecode(response.body) as Map<String, dynamic>;
         final userData = (payload["item"] ?? <String, dynamic>{}) as Map;
@@ -407,7 +385,7 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final currentUid = _uid;
       if (currentUid == null) return false;
-      final response = await http.get(Uri.parse("${ApiClient.baseUrl}/users/$currentUid"));
+      final response = await ApiClient.get("/users/$currentUid");
       if (response.statusCode == 200) {
         final payload = jsonDecode(response.body) as Map<String, dynamic>;
         final driverData = (payload["item"] ?? <String, dynamic>{}) as Map;
@@ -444,7 +422,7 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       final currentUid = _uid;
       if (currentUid == null) return false;
-      final response = await http.get(Uri.parse("${ApiClient.baseUrl}/users/$currentUid"));
+      final response = await ApiClient.get("/users/$currentUid");
       if (response.statusCode == 200) {
         final payload = jsonDecode(response.body) as Map<String, dynamic>;
         final userData = (payload["item"] ?? <String, dynamic>{}) as Map;

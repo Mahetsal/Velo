@@ -387,13 +387,6 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                     ),
                     const SizedBox(height: 12),
-                    _ToggleRow(
-                      icon: Icons.notifications_rounded,
-                      title: context.l10n.notifications,
-                      value: true,
-                      onChanged: (_) {},
-                    ),
-                    const SizedBox(height: 8),
                     Consumer<AppInfoClass>(
                       builder: (context, appInfo, _) {
                         final isDark = appInfo.themeMode == ThemeMode.dark;

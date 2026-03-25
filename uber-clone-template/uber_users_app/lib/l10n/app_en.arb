@@ -381,5 +381,6 @@
 
   "changePasswordSubtitle": "Change your password for login.",
   "aboutVersionLine": "Version {version} ({build})",
-  "@aboutVersionLine": { "placeholders": { "version": { "type": "String" }, "build": { "type": "String" } } }
+  "@aboutVersionLine": { "placeholders": { "version": { "type": "String" }, "build": { "type": "String" } } },
+  "fetchingLocation": "Fetching your location…"
 }

@@ -306,7 +306,7 @@ class _ProfilePageState extends State<ProfilePage> {
             icon: Icons.call_rounded,
             label: context.l10n.phoneNumber,
             controller: phoneTextEditingController,
-            enabled: _editMode,
+            enabled: false,
             keyboardType: TextInputType.phone,
           ),
           const SizedBox(height: 12),
@@ -317,6 +317,25 @@ class _ProfilePageState extends State<ProfilePage> {
             enabled: _editMode,
             keyboardType: TextInputType.emailAddress,
           ),
+          if (_editMode) ...[
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: _saving ? null : _saveProfile,
+                child: _saving
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(context.l10n.save),
+              ),
+            ),
+          ],
 
             // const SizedBox(
             //   height: 12,
@@ -362,8 +381,11 @@ class _ProfileField extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: cs.surfaceContainerLow,
+        color: enabled ? cs.surfaceContainerLowest : cs.surfaceContainerLow,
         borderRadius: BorderRadius.circular(20),
+        border: enabled
+            ? Border.all(color: AppTheme.accent.withOpacity(0.4), width: 1.5)
+            : null,
       ),
       child: Row(
         children: [
@@ -374,7 +396,7 @@ class _ProfileField extends StatelessWidget {
               color: cs.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(999),
             ),
-            child: Icon(icon, color: AppTheme.accent),
+            child: Icon(icon, color: enabled ? AppTheme.accent : AppTheme.onSurfaceMuted),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -394,18 +416,22 @@ class _ProfileField extends StatelessWidget {
                   controller: controller,
                   enabled: enabled,
                   keyboardType: keyboardType,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: InputBorder.none,
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
+                    hintText: enabled ? label : null,
                   ),
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w800,
+                        color: enabled ? AppTheme.onSurface : AppTheme.onSurfaceMuted,
                       ),
                 ),
               ],
             ),
           ),
+          if (enabled)
+            const Icon(Icons.edit_rounded, size: 16, color: AppTheme.accent),
         ],
       ),
     );
