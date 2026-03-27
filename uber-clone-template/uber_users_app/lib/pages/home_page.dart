@@ -17,7 +17,6 @@ import 'package:uber_users_app/api/api_client.dart';
 import 'package:uber_users_app/appInfo/app_info.dart';
 import 'package:uber_users_app/appInfo/auth_provider.dart';
 import 'package:uber_users_app/observability/analytics_service.dart';
-import 'package:uber_users_app/pages/search_destination_place.dart';
 import 'package:uber_users_app/pages/support_page.dart';
 import 'package:uber_users_app/widgets/post_trip_feedback_sheet.dart';
 import 'package:uber_users_app/l10n/l10n_ext.dart';
@@ -90,12 +89,11 @@ class _HomePageState extends State<HomePage> {
   bool _homeSheetExpanded = false;
   bool _tripActiveFunnelLogged = false;
   String? _mapPickTarget; // "pickup" | "dropoff" | null
-  // GeoFire driver map updates are optional; keep off to avoid crashes on
-  // misconfigured Firebase/GeoFire setups.
-  // Note: ride-requesting depends on a non-empty nearby drivers list.
-  // We keep the GeoFire startup wrapped in try/catch elsewhere so enabling this
-  // won't crash the app even if RTDB/GeoFire is misconfigured.
-  static const bool _enableNearbyDrivers = true;
+  // GeoFire requires a properly configured Firebase RTDB. Disabled because the
+  // current Firebase project is a placeholder (flutterfire-e2e-tests) and
+  // causes native platform crashes that Dart try/catch cannot intercept.
+  // Rides still work: trips are created via the AWS API and drivers poll for them.
+  static const bool _enableNearbyDrivers = false;
 
   void _recalculateFareAndTime() {
     if (!mounted) return;
@@ -137,6 +135,7 @@ class _HomePageState extends State<HomePage> {
   Timer? _demoArrivedTimer;
   Timer? _demoOnTripTimer;
   Timer? _demoEndedTimer;
+  Timer? _noDriverTimeoutTimer;
 
   void _cancelDemoDriverTimers() {
     _demoArrivedTimer?.cancel();
@@ -145,6 +144,21 @@ class _HomePageState extends State<HomePage> {
     _demoArrivedTimer = null;
     _demoOnTripTimer = null;
     _demoEndedTimer = null;
+  }
+
+  void _startNoDriverTimeout() {
+    _noDriverTimeoutTimer?.cancel();
+    _noDriverTimeoutTimer = Timer(const Duration(minutes: 2), () {
+      if (!mounted) return;
+      final stillWaiting = stateOfApp == "requesting" &&
+          status != "accepted" &&
+          status != "arrived" &&
+          status != "ontrip";
+      if (!stillWaiting) return;
+      cancelRideRequest();
+      resetAppNow();
+      noDriverAvailable();
+    });
   }
 
   Future<void> _startDemoDriverFlow() async {
@@ -215,6 +229,8 @@ class _HomePageState extends State<HomePage> {
     final savedTripId = currentTripId;
     tripPollTimer?.cancel();
     tripPollTimer = null;
+    _noDriverTimeoutTimer?.cancel();
+    _noDriverTimeoutTimer = null;
     currentTripId = null;
     _cancelDemoDriverTimers();
     resetAppNow();
@@ -537,8 +553,8 @@ class _HomePageState extends State<HomePage> {
       rideDetailsContainerHeight = 0;
       requestContainerHeight = 0;
       tripContainerHeight = 0;
-      searchContainerHeight = 360;
-      bottomMapPadding = 360;
+      searchContainerHeight = 160;
+      bottomMapPadding = 160;
       isDrawerOpened = true;
       _homeSheetExpanded = false;
 
@@ -552,17 +568,19 @@ class _HomePageState extends State<HomePage> {
       _tripActiveFunnelLogged = false;
     });
     _geoListenerPaused = false;
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted || mapController == null) return;
-      final pos = currentPositionOfUser;
-      if (pos != null) {
-        _lastGeoCenterLat = pos.latitude;
-        _lastGeoCenterLng = pos.longitude;
-        await _startGeoFireQuery(pos.latitude, pos.longitude, _lastGeoRadiusKm);
-      } else {
-        await _onMapCameraIdle();
-      }
-    });
+    if (_enableNearbyDrivers) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted || mapController == null) return;
+        final pos = currentPositionOfUser;
+        if (pos != null) {
+          _lastGeoCenterLat = pos.latitude;
+          _lastGeoCenterLng = pos.longitude;
+          await _startGeoFireQuery(pos.latitude, pos.longitude, _lastGeoRadiusKm);
+        } else {
+          await _onMapCameraIdle();
+        }
+      });
+    }
   }
 
   cancelRideRequest() {
@@ -572,6 +590,8 @@ class _HomePageState extends State<HomePage> {
     _cancelDemoDriverTimers();
     tripPollTimer?.cancel();
     tripPollTimer = null;
+    _noDriverTimeoutTimer?.cancel();
+    _noDriverTimeoutTimer = null;
     currentTripId = null;
     plateDriver = "";
     _tripActiveFunnelLogged = false;
@@ -586,14 +606,15 @@ class _HomePageState extends State<HomePage> {
     if (mounted) {
       setState(() {
         rideDetailsContainerHeight = 0;
-        requestContainerHeight = 220;
-        bottomMapPadding = 260;
+        requestContainerHeight = 360;
+        bottomMapPadding = 360;
         isDrawerOpened = true;
       });
     }
 
     //send ride request
     makeTripRequest();
+    _startNoDriverTimeout();
   }
 
   bool _isInVisibleMap(LatLng p) {
@@ -659,7 +680,9 @@ class _HomePageState extends State<HomePage> {
     _cameraIdleDebounce?.cancel();
     _cameraIdleDebounce =
         Timer(const Duration(milliseconds: 350), () async {
-      await _onMapCameraIdle();
+      try {
+        await _onMapCameraIdle();
+      } catch (_) {}
     });
   }
 
@@ -683,57 +706,65 @@ class _HomePageState extends State<HomePage> {
 
     try {
       _geoFireSubscription =
-          Geofire.queryAtLocation(lat, lng, radiusKm)?.listen((driverEvent) {
-        try {
-          if (driverEvent == null) return;
-          var onlineDriverChild = driverEvent["callBack"];
+          Geofire.queryAtLocation(lat, lng, radiusKm)?.listen(
+        (driverEvent) {
+          try {
+            if (driverEvent == null) return;
+            var onlineDriverChild = driverEvent["callBack"];
 
-          switch (onlineDriverChild) {
-            case Geofire.onKeyEntered:
-              if (driverEvent["key"] != null &&
-                  driverEvent["latitude"] != null &&
-                  driverEvent["longitude"] != null) {
-                OnlineNearbyDrivers onlineNearbyDrivers = OnlineNearbyDrivers();
-                onlineNearbyDrivers.uidDriver = driverEvent["key"];
-                onlineNearbyDrivers.latDriver = driverEvent["latitude"];
-                onlineNearbyDrivers.lngDriver = driverEvent["longitude"];
-                ManageDriversMethods.nearbyOnlineDriversList
-                    .add(onlineNearbyDrivers);
+            switch (onlineDriverChild) {
+              case Geofire.onKeyEntered:
+                if (driverEvent["key"] != null &&
+                    driverEvent["latitude"] != null &&
+                    driverEvent["longitude"] != null) {
+                  OnlineNearbyDrivers onlineNearbyDrivers = OnlineNearbyDrivers();
+                  onlineNearbyDrivers.uidDriver = driverEvent["key"];
+                  onlineNearbyDrivers.latDriver = driverEvent["latitude"];
+                  onlineNearbyDrivers.lngDriver = driverEvent["longitude"];
+                  ManageDriversMethods.nearbyOnlineDriversList
+                      .add(onlineNearbyDrivers);
 
-                if (nearbyOnlineDriversKeysLoaded == true) {
+                  if (nearbyOnlineDriversKeysLoaded == true) {
+                    updateAvailableNearbyOnlineDriversOnMap();
+                  }
+                }
+                break;
+
+              case Geofire.onKeyExited:
+                if (driverEvent["key"] != null) {
+                  ManageDriversMethods.removeDriverFromList(driverEvent["key"]);
                   updateAvailableNearbyOnlineDriversOnMap();
                 }
-              }
-              break;
+                break;
 
-            case Geofire.onKeyExited:
-              if (driverEvent["key"] != null) {
-                ManageDriversMethods.removeDriverFromList(driverEvent["key"]);
+              case Geofire.onKeyMoved:
+                if (driverEvent["key"] != null &&
+                    driverEvent["latitude"] != null &&
+                    driverEvent["longitude"] != null) {
+                  OnlineNearbyDrivers onlineNearbyDrivers = OnlineNearbyDrivers();
+                  onlineNearbyDrivers.uidDriver = driverEvent["key"];
+                  onlineNearbyDrivers.latDriver = driverEvent["latitude"];
+                  onlineNearbyDrivers.lngDriver = driverEvent["longitude"];
+                  ManageDriversMethods.updateOnlineNearbyDriversLocation(
+                      onlineNearbyDrivers);
+                  updateAvailableNearbyOnlineDriversOnMap();
+                }
+                break;
+
+              case Geofire.onGeoQueryReady:
+                nearbyOnlineDriversKeysLoaded = true;
                 updateAvailableNearbyOnlineDriversOnMap();
-              }
-              break;
-
-            case Geofire.onKeyMoved:
-              if (driverEvent["key"] != null &&
-                  driverEvent["latitude"] != null &&
-                  driverEvent["longitude"] != null) {
-                OnlineNearbyDrivers onlineNearbyDrivers = OnlineNearbyDrivers();
-                onlineNearbyDrivers.uidDriver = driverEvent["key"];
-                onlineNearbyDrivers.latDriver = driverEvent["latitude"];
-                onlineNearbyDrivers.lngDriver = driverEvent["longitude"];
-                ManageDriversMethods.updateOnlineNearbyDriversLocation(
-                    onlineNearbyDrivers);
-                updateAvailableNearbyOnlineDriversOnMap();
-              }
-              break;
-
-            case Geofire.onGeoQueryReady:
-              nearbyOnlineDriversKeysLoaded = true;
-              updateAvailableNearbyOnlineDriversOnMap();
-              break;
-          }
-        } catch (_) {}
-      });
+                break;
+            }
+          } catch (_) {}
+        },
+        onError: (_) {
+          // GeoFire/Firebase RTDB stream error — non-fatal, just stop listening.
+          try { _geoFireSubscription?.cancel(); } catch (_) {}
+          _geoFireSubscription = null;
+        },
+        cancelOnError: true,
+      );
     } catch (_) {
       // Ignore GeoFire query errors.
       return;
@@ -865,11 +896,13 @@ class _HomePageState extends State<HomePage> {
       }
 
       if (status == "accepted") {
+        _noDriverTimeoutTimer?.cancel();
+        _noDriverTimeoutTimer = null;
         displayTripDetailsContainer();
         _geoListenerPaused = true;
-        unawaited(_geoFireSubscription?.cancel());
+        try { unawaited(_geoFireSubscription?.cancel()); } catch (_) {}
         _geoFireSubscription = null;
-        Geofire.stopListener();
+        try { Geofire.stopListener(); } catch (_) {}
 
         if (!mounted) return;
         setState(() {
@@ -1013,15 +1046,14 @@ class _HomePageState extends State<HomePage> {
 
   searchDriver() {
     if (availableNearbyOnlineDriversList.isEmpty) {
-      cancelRideRequest();
-      resetAppNow();
-      noDriverAvailable();
+      // No GeoFire drivers discovered — the trip was already created via the
+      // AWS API in makeTripRequest(). The poll timer will detect when a driver
+      // accepts. Don't cancel the request; just wait.
       return;
     }
 
     final currentDriver = availableNearbyOnlineDriversList.first;
 
-    //send notification to this currentDriver - currentDriver means selected driver
     sendNotificationToDriver(currentDriver);
 
     if (availableNearbyOnlineDriversList.isNotEmpty) {
@@ -1084,9 +1116,10 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _cancelDemoDriverTimers();
     tripPollTimer?.cancel();
+    _noDriverTimeoutTimer?.cancel();
     _cameraIdleDebounce?.cancel();
-    _geoFireSubscription?.cancel();
-    Geofire.stopListener();
+    try { _geoFireSubscription?.cancel(); } catch (_) {}
+    try { Geofire.stopListener(); } catch (_) {}
     super.dispose();
   }
 
@@ -1269,6 +1302,253 @@ class _HomePageState extends State<HomePage> {
       longitudePosition: point.longitude,
       placeID: "${point.latitude},${point.longitude}",
     );
+  }
+
+  Future<AddressModel?> _addressFromQuery(String query) async {
+    final q = query.trim();
+    if (q.isEmpty) return null;
+    try {
+      final url =
+          "https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(q)}&format=jsonv2&accept-language=en&limit=1";
+      final resp = await http.get(
+        Uri.parse(url),
+        headers: const {"User-Agent": "velo-users-app/1.0"},
+      );
+      if (resp.statusCode != 200) return null;
+      final decoded = jsonDecode(resp.body);
+      if (decoded is! List || decoded.isEmpty) return null;
+      final first = decoded.first as Map<String, dynamic>;
+      final lat = double.tryParse(first["lat"]?.toString() ?? "");
+      final lon = double.tryParse(first["lon"]?.toString() ?? "");
+      if (lat == null || lon == null) return null;
+      final display = first["display_name"]?.toString().trim();
+      final name = (display != null && display.isNotEmpty) ? display : q;
+      return AddressModel(
+        placeName: name,
+        humanReadableAddress: name,
+        latitudePosition: lat,
+        longitudePosition: lon,
+        placeID: "${lat.toStringAsFixed(6)},${lon.toStringAsFixed(6)}",
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<List<AddressModel>> _searchAddresses(String query) async {
+    final q = query.trim();
+    if (q.length < 2) return const [];
+    try {
+      final url =
+          "https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(q)}&format=jsonv2&accept-language=en&limit=6";
+      final resp = await http.get(
+        Uri.parse(url),
+        headers: const {"User-Agent": "velo-users-app/1.0"},
+      );
+      if (resp.statusCode != 200) return const [];
+      final decoded = jsonDecode(resp.body);
+      if (decoded is! List) return const [];
+      final results = <AddressModel>[];
+      for (final raw in decoded) {
+        if (raw is! Map) continue;
+        final map = Map<String, dynamic>.from(raw as Map);
+        final lat = double.tryParse(map["lat"]?.toString() ?? "");
+        final lon = double.tryParse(map["lon"]?.toString() ?? "");
+        if (lat == null || lon == null) continue;
+        final display = map["display_name"]?.toString().trim();
+        final name = (display != null && display.isNotEmpty) ? display : q;
+        results.add(
+          AddressModel(
+            placeName: name,
+            humanReadableAddress: name,
+            latitudePosition: lat,
+            longitudePosition: lon,
+            placeID: "${lat.toStringAsFixed(6)},${lon.toStringAsFixed(6)}",
+          ),
+        );
+      }
+      return results;
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  Future<void> _applyAddressForTarget(String target, AddressModel address) async {
+    final app = Provider.of<AppInfoClass>(context, listen: false);
+    if (target == "pickup") {
+      app.updatePickUpLocation(address);
+      cMethods.displaySnackBar(context.l10n.pickupUpdatedFromMap, context);
+      if (mounted) setState(() => _mapPickTarget = null);
+      return;
+    }
+    app.updateDropOffLocation(address);
+    cMethods.displaySnackBar(context.l10n.dropoffUpdatedFromMap, context);
+    if (mounted) setState(() => _mapPickTarget = null);
+    if (!mounted) return;
+    if (app.pickUpLocation != null && app.dropOffLocation != null) {
+      await displayUserRideDetailsContainer();
+    }
+  }
+
+  Future<void> _typeAddressForTarget(String target) async {
+    final controller = TextEditingController();
+    Timer? debounce;
+    AddressModel? selectedAddress;
+    final chosen = await showDialog<AddressModel>(
+      context: context,
+      builder: (ctx) {
+        List<AddressModel> suggestions = const [];
+        var loading = false;
+        return StatefulBuilder(
+          builder: (ctx, setLocalState) => AlertDialog(
+            title: Text(
+                target == "pickup" ? "Type pickup location" : "Type destination"),
+            content: SizedBox(
+              width: 420,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: controller,
+                    autofocus: true,
+                    textInputAction: TextInputAction.search,
+                    decoration: const InputDecoration(
+                      hintText: "Enter area, street, or place",
+                    ),
+                    onChanged: (value) {
+                      debounce?.cancel();
+                      debounce = Timer(const Duration(milliseconds: 350), () async {
+                        final query = value.trim();
+                        if (query.length < 2) {
+                          if (!ctx.mounted) return;
+                          setLocalState(() {
+                            loading = false;
+                            suggestions = const [];
+                          });
+                          return;
+                        }
+                        if (!ctx.mounted) return;
+                        setLocalState(() => loading = true);
+                        final results = await _searchAddresses(query);
+                        if (!ctx.mounted) return;
+                        setLocalState(() {
+                          loading = false;
+                          suggestions = results;
+                        });
+                      });
+                    },
+                    onSubmitted: (_) {
+                      if (selectedAddress != null) {
+                        Navigator.of(ctx).pop(selectedAddress);
+                      } else if (suggestions.isNotEmpty) {
+                        Navigator.of(ctx).pop(suggestions.first);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  if (loading) const LinearProgressIndicator(minHeight: 2),
+                  if (loading) const SizedBox(height: 10),
+                  if (!loading)
+                    Flexible(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 250),
+                        child: suggestions.isEmpty
+                            ? const SizedBox.shrink()
+                            : ListView.separated(
+                                shrinkWrap: true,
+                                itemCount: suggestions.length,
+                                separatorBuilder: (_, __) =>
+                                    const Divider(height: 1),
+                                itemBuilder: (_, index) {
+                                  final item = suggestions[index];
+                                  final isSelected =
+                                      selectedAddress?.placeID == item.placeID;
+                                  return ListTile(
+                                    dense: true,
+                                    selected: isSelected,
+                                    leading: const Icon(Icons.place_outlined),
+                                    title: Text(
+                                      item.placeName ?? "",
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    onTap: () {
+                                      setLocalState(() => selectedAddress = item);
+                                      Navigator.of(ctx).pop(item);
+                                    },
+                                  );
+                                },
+                              ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text("Cancel"),
+              ),
+              FilledButton(
+                onPressed: () {
+                  if (selectedAddress != null) {
+                    Navigator.of(ctx).pop(selectedAddress);
+                    return;
+                  }
+                  if (suggestions.isNotEmpty) {
+                    Navigator.of(ctx).pop(suggestions.first);
+                  }
+                },
+                child: const Text("Use"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    final typedText = controller.text.trim();
+    debounce?.cancel();
+    controller.dispose();
+    if (chosen == null || !mounted) return;
+    final address = chosen.placeName?.trim().isNotEmpty == true
+        ? chosen
+        : await _addressFromQuery(typedText);
+    if (!mounted) return;
+    if (address == null) {
+      cMethods.displaySnackBar("Location not found. Try a more specific name.", context);
+      return;
+    }
+    await _applyAddressForTarget(target, address);
+  }
+
+  Future<void> _chooseLocationInputMethod(String target) async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.map_rounded),
+              title: Text(target == "pickup" ? "Select pickup on map" : "Select destination on map"),
+              onTap: () => Navigator.pop(context, "map"),
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit_location_alt_rounded),
+              title: Text(target == "pickup" ? "Type pickup location" : "Type destination"),
+              onTap: () => Navigator.pop(context, "type"),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || choice == null) return;
+    if (choice == "type") {
+      await _typeAddressForTarget(target);
+      return;
+    }
+    _startPickFromMap(target);
   }
 
   void _startPickFromMap(String target) {
@@ -1797,21 +2077,7 @@ class _HomePageState extends State<HomePage> {
                                   const SizedBox(height: 14),
                                   InkWell(
                                     borderRadius: BorderRadius.circular(18),
-                                    onTap: () async {
-                                      final responseFromSearchPage =
-                                          await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (c) =>
-                                              const SearchDestinationPlace
-                                                  .forDropOff(),
-                                        ),
-                                      );
-                                      if (responseFromSearchPage ==
-                                          "placeSelected") {
-                                        displayUserRideDetailsContainer();
-                                      }
-                                    },
+                                    onTap: () => _chooseLocationInputMethod("dropoff"),
                                     child: Ink(
                                       height: 56,
                                       padding: const EdgeInsets.symmetric(
@@ -1852,22 +2118,7 @@ class _HomePageState extends State<HomePage> {
                                 const SizedBox(height: 14),
                                 InkWell(
                                   borderRadius: BorderRadius.circular(16),
-                                  onTap: () async {
-                                    final responseFromSearchPage =
-                                        await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (c) =>
-                                            const SearchDestinationPlace
-                                                .forPickup(),
-                                      ),
-                                    );
-                                    if (responseFromSearchPage ==
-                                            "placeSelected" &&
-                                        mounted) {
-                                      setState(() {});
-                                    }
-                                  },
+                                  onTap: () => _chooseLocationInputMethod("pickup"),
                                   child: Ink(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 14, vertical: 12),
@@ -1936,57 +2187,21 @@ class _HomePageState extends State<HomePage> {
                                         title: context.l10n.recAbdaliTitle,
                                         subtitle: context.l10n.recAbdaliSubtitle,
                                         priceHint: "8.2 JOD",
-                                        onTap: () async {
-                                          final r = await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (c) =>
-                                                  const SearchDestinationPlace
-                                                      .forDropOff(),
-                                            ),
-                                          );
-                                          if (r == "placeSelected") {
-                                            displayUserRideDetailsContainer();
-                                          }
-                                        },
+                                        onTap: () => _chooseLocationInputMethod("dropoff"),
                                       ),
                                       _LandmarkCard(
                                         icon: Icons.shopping_bag_rounded,
                                         title: context.l10n.recCityMallTitle,
                                         subtitle: context.l10n.recCityMallSubtitle,
                                         priceHint: "4.5 JOD",
-                                        onTap: () async {
-                                          final r = await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (c) =>
-                                                  const SearchDestinationPlace
-                                                      .forDropOff(),
-                                            ),
-                                          );
-                                          if (r == "placeSelected") {
-                                            displayUserRideDetailsContainer();
-                                          }
-                                        },
+                                        onTap: () => _chooseLocationInputMethod("dropoff"),
                                       ),
                                       _LandmarkCard(
                                         icon: Icons.flight_takeoff_rounded,
                                         title: context.l10n.airport,
                                         subtitle: context.l10n.queenAliaAirport,
                                         priceHint: "22 JOD",
-                                        onTap: () async {
-                                          final r = await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (c) =>
-                                                  const SearchDestinationPlace
-                                                      .forDropOff(),
-                                            ),
-                                          );
-                                          if (r == "placeSelected") {
-                                            displayUserRideDetailsContainer();
-                                          }
-                                        },
+                                        onTap: () => _chooseLocationInputMethod("dropoff"),
                                       ),
                                       Container(
                                         padding: const EdgeInsets.symmetric(
@@ -2145,22 +2360,17 @@ class _HomePageState extends State<HomePage> {
                       showHandle: true,
                       child: SizedBox(
                         height: requestContainerHeight,
-                        child: RequestingDriverSheet(
-                          etaMinutesText: estimatedTimeCar
-                                  .replaceAll(RegExp(r'[^0-9]'), '')
-                                  .trim()
-                                  .isEmpty
-                              ? "—"
-                              : estimatedTimeCar
-                                  .replaceAll(RegExp(r'[^0-9]'), '')
-                                  .trim(),
-                          vehicleName: "Velo $selectedVehicle",
-                          vehicleSubtitle: "Premium • AC",
-                          fareText: "JOD ${_effectiveFare().toStringAsFixed(2)}",
-                          onCancel: () {
-                            resetAppNow();
-                            cancelRideRequest();
-                          },
+                        child: SingleChildScrollView(
+                          physics: const ClampingScrollPhysics(),
+                          child: RequestingDriverSheet(
+                            vehicleName: "Velo $selectedVehicle",
+                            vehicleSubtitle: "Premium • AC",
+                            fareText: "JOD ${_effectiveFare().toStringAsFixed(2)}",
+                            onCancel: () {
+                              resetAppNow();
+                              cancelRideRequest();
+                            },
+                          ),
                         ),
                       ),
                     ),

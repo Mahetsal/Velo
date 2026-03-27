@@ -7,6 +7,8 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+import groovy.json.JsonSlurper
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
@@ -15,7 +17,22 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def mapsApiKey = localProperties.getProperty("MAPS_API_KEY", "YOUR_MAPS_API_KEY_HERE")
+def mapsApiKey = localProperties.getProperty("MAPS_API_KEY", "").trim()
+if (!mapsApiKey) {
+    try {
+        // Fallback: reuse API key from google-services.json if local MAPS_API_KEY is not set.
+        def googleServicesFile = file("google-services.json")
+        if (googleServicesFile.exists()) {
+            def googleServices = new JsonSlurper().parseText(googleServicesFile.text)
+            mapsApiKey = googleServices?.client?.getAt(0)?.api_key?.getAt(0)?.current_key ?: ""
+        }
+    } catch (ignored) {
+        mapsApiKey = ""
+    }
+}
+if (!mapsApiKey) {
+    mapsApiKey = "YOUR_MAPS_API_KEY_HERE"
+}
 
 def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
 if (flutterVersionCode == null) {
